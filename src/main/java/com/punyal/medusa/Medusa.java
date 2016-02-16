@@ -23,7 +23,8 @@
  */
 package com.punyal.medusa;
 
-import com.punyal.medusa.core.Configuration;
+import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.webserver.WebServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +48,13 @@ public class Medusa implements Runnable {
         // Start CoAP resources
         
         // Start Web server
+        WebServer webServer = new WebServer(configuration);
+        try {
+            webServer.start();
+            webServer.join();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "WebServer", ex);
+        }
         
         log.log(Level.OFF, "Medusa DEAD!");
     }

@@ -23,20 +23,17 @@
  */
 package com.punyal.medusa.core.webserver;
 
-import com.punyal.medusa.core.configuration.Configuration;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerList;
+import java.net.URL;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class WebServer extends Server {
-    public WebServer(Configuration configuration) {
-        super(configuration.getConfigurationWebServer().getPort());
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{ new FilesHandler(configuration.getConfigurationWebServer().getFilesPath()) });
-        setHandler(handlers);
+public class FilesHandler extends ResourceHandler {
+    public FilesHandler(String path) {
+        URL baseUrl = FilesHandler.class.getResource(path);
+        String basePaString = baseUrl.toExternalForm();
+        setResourceBase(basePaString);
     }
 }

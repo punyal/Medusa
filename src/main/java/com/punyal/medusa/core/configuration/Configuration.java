@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa.core;
+package com.punyal.medusa.core.configuration;
 
 import static com.punyal.medusa.constants.Defaults.*;
 
@@ -31,9 +31,11 @@ import static com.punyal.medusa.constants.Defaults.*;
  */
 public class Configuration {
     /* All configurations here */
+    private final ConfigurationWebServer confWebServer;
     
     public Configuration() {
         /* Load defaults */
+        confWebServer = new ConfigurationWebServer();
     }
     
     @Override
@@ -41,11 +43,16 @@ public class Configuration {
         StringBuilder sb = new StringBuilder();
         // Humman readable configuration
         sb.append("Medusa Configuration\n");
-        sb.append("- Version: ").append(MEDUSA_VERSION).append(".").append(MEDUSA_SUBVERSION).append("\n");
-        sb.append("- DataBases -\n");
-        sb.append("- Web Services -\n");
-        sb.append("- CoAP Services -\n");
+        sb.append("Version: ").append(MEDUSA_VERSION).append(".").append(MEDUSA_SUBVERSION).append("\n");
+        sb.append("[DataBases]\n");
+        sb.append("[Web Services]\n");
+        sb.append(" - Port:").append(confWebServer.getPort()).append("\n");
+        sb.append(" - FilesPath:").append(confWebServer.getFilesPath()).append("\n");
+        sb.append("[CoAP Services]\n");
         return sb.toString();
     }
     
+    public ConfigurationWebServer getConfigurationWebServer() {
+        return confWebServer;
+    }
 }

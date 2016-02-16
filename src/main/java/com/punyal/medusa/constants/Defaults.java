@@ -32,4 +32,8 @@ public class Defaults {
     public static final int MEDUSA_VERSION = 2;
     public static final int MEDUSA_SUBVERSION = 1;
     
+    /* Web Server */
+    public static final int DEFAULT_WEB_PORT = 5000;
+    public static final String DEFAULT_WEB_PATH = "/web";
+    
 }

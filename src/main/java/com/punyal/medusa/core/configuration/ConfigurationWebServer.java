@@ -21,22 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa.core.webserver;
+package com.punyal.medusa.core.configuration;
 
-import com.punyal.medusa.core.configuration.Configuration;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerList;
+import static com.punyal.medusa.constants.Defaults.*;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class WebServer extends Server {
-    public WebServer(Configuration configuration) {
-        super(configuration.getConfigurationWebServer().getPort());
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{ new FilesHandler(configuration.getConfigurationWebServer().getFilesPath()) });
-        setHandler(handlers);
+public class ConfigurationWebServer {
+    private final int port;
+    private final String filesPath;
+    
+    public ConfigurationWebServer() {
+        /* Load default parameters */
+        port = DEFAULT_WEB_PORT;
+        filesPath = DEFAULT_WEB_PATH;
     }
+    
+    public int getPort() {
+        return port;
+    }
+    
+    public String getFilesPath() {
+        return filesPath;
+    }
+    
 }
