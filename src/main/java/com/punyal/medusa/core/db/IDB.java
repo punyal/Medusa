@@ -21,15 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa.constants;
+package com.punyal.medusa.core.db;
+
+import java.net.InetAddress;
+import java.util.List;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class JsonKeys {
-    /* JSON keys */
-    public static final String JSON_KEY_AUTHENTICATOR = "authenticator";
-    public static final String JSON_KEY_TIMEOUT = "timeout";
-    public static final String JSON_KEY_VERSION = "version";
+public interface IDB {
+    void addDeviceInfo(Device device);
+    void updateDeviceInfo(Device device);
+    void removeDeviceInfo(Device device);
+    Device findDevice(String id);
+    List<Device> findDevice(InetAddress address);
+    
 }

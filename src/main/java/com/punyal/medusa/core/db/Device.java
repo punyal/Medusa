@@ -21,15 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa.constants;
+package com.punyal.medusa.core.db;
+
+import com.punyal.medusa.core.security.Authenticator;
+import java.net.InetAddress;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class JsonKeys {
-    /* JSON keys */
-    public static final String JSON_KEY_AUTHENTICATOR = "authenticator";
-    public static final String JSON_KEY_TIMEOUT = "timeout";
-    public static final String JSON_KEY_VERSION = "version";
+public class Device {
+    private InetAddress address;
+    private final String id;
+    private String password;
+    private Authenticator authenticator;
+
+    public Device(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
+    
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+    
+    public void setAuthenticator(InetAddress address, Authenticator authenticator) {
+        this.address = address;
+        this.authenticator = authenticator;
+    }
+    
+    public InetAddress getAddress() {
+        return address;
+    }
+    
+    public String getID() {
+        return id;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public Authenticator getAuthenticator() {
+        return authenticator;
+    }
+    
+    
+    
 }

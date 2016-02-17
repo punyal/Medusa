@@ -27,6 +27,11 @@ import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.configuration.Configuration;
 import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
+import com.punyal.medusa.core.security.Authenticator;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.californium.core.CoapResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 import static org.eclipse.californium.core.coap.MediaTypeRegistry.*;
@@ -50,6 +55,16 @@ public class AuthenticationResource extends CoapResource {
     public void handleGET(CoapExchange exchange) {
         JSONObject json = new JSONObject();
         json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
+        Authenticator authenticator = null;
+        try {
+            authenticator = configuration.getCryptoEngine().getNewAuthenticator(InetAddress.getLocalHost());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AuthenticationResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        json.put(JSON_KEY_AUTHENTICATOR, authenticator.getValue());
+        json.put(JSON_KEY_TIMEOUT, authenticator.getTimeout());
+        
         exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
     }
     

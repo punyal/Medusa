@@ -21,53 +21,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa.core.configuration;
+package com.punyal.medusa.core.security;
 
 import static com.punyal.medusa.constants.Defaults.*;
-import com.punyal.medusa.core.db.NoDB;
-import com.punyal.medusa.core.security.CryptoEngine;
+import com.punyal.medusa.core.db.Device;
 import com.punyal.medusa.core.db.IDB;
+import java.net.InetAddress;
+import java.security.SecureRandom;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Configuration {
-    /* All configurations here */
-    private final ConfigurationWebServer confWebServer;
-    private final CryptoEngine cryptoEngine;
+public class CryptoEngine {
+    private final SecureRandom randomizer;
     private final IDB db;
     
-    public Configuration() {
-        /* Set DataBase */
-        db = new NoDB(); // NoDB
-        
-        /* Load defaults */
-        confWebServer = new ConfigurationWebServer();
-        cryptoEngine = new CryptoEngine(db);
-        
-        
+    public CryptoEngine(IDB db) {
+        randomizer = new SecureRandom();
+        this.db = db;
     }
     
-    @Override
-    public String toString() {
+    public synchronized Authenticator getNewAuthenticator(InetAddress address) {
+        Authenticator authenticator = new Authenticator(generateNewAuthenticatorValue(), DEFAULT_AUTHENTICATOR_TIMEOUT);
+        Device device = new Device("null","null");
+        device.setAuthenticator(address, authenticator);
+        db.addDeviceInfo(device);
+        return authenticator;
+    }
+    
+    private String generateNewAuthenticatorValue() {
+        return ByteArray2Hex(random16bytes());
+    }
+    
+    private byte[] random16bytes() {
+        byte bytes[] = new byte[16];
+        randomizer.nextBytes(bytes);
+        return bytes;
+    }
+    
+    private byte[] random8bytes() {
+        byte bytes[] = new byte[8];
+        randomizer.nextBytes(bytes);
+        return bytes;
+    }
+    
+    private String ByteArray2Hex(byte[] bytes) {
+        if(bytes == null) return "null";
         StringBuilder sb = new StringBuilder();
-        // Humman readable configuration
-        sb.append("Medusa Configuration\n");
-        sb.append("Version: ").append(MEDUSA_VERSION).append(".").append(MEDUSA_SUBVERSION).append("\n");
-        sb.append("[DataBases]\n");
-        sb.append("[Web Services]\n");
-        sb.append(" - Port:").append(confWebServer.getPort()).append("\n");
-        sb.append(" - FilesPath:").append(confWebServer.getFilesPath()).append("\n");
-        sb.append("[CoAP Services]\n");
+        for(byte b:bytes)
+            sb.append(String.format("%02x", b & 0xFF));
         return sb.toString();
     }
     
-    public ConfigurationWebServer getConfigurationWebServer() {
-        return confWebServer;
-    }
     
-    public CryptoEngine getCryptoEngine() {
-        return cryptoEngine;
-    }
+    
 }

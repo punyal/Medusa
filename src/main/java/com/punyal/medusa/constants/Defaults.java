@@ -36,4 +36,7 @@ public class Defaults {
     public static final int DEFAULT_WEB_PORT = 5000;
     public static final String DEFAULT_WEB_PATH = "/web";
     
+    /* Authenticator */
+    public static final long DEFAULT_AUTHENTICATOR_TIMEOUT = 15000;// miliseconds
+    
 }
