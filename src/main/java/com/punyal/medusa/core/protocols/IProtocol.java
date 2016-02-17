@@ -21,15 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa;
+package com.punyal.medusa.core.protocols;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Main {
-    public static void main(String[] args) {
-        Medusa medusa = new Medusa();
-        medusa.run();
-    }
+public interface IProtocol {
+    
+    String getName();
+    
+    void start();
+    void stop();
+    
+    
 }

@@ -24,6 +24,9 @@
 package com.punyal.medusa;
 
 import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.protocols.IProtocol;
+import com.punyal.medusa.core.protocols.Protocols;
+import com.punyal.medusa.core.protocols.coap.CoAP;
 import com.punyal.medusa.core.webserver.WebServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,20 +38,45 @@ import java.util.logging.Logger;
 public class Medusa implements Runnable {
     private static final Logger log = Logger.getLogger(Medusa.class.getName());
     private final Configuration configuration;
+    private final Protocols protocols;
+    private final WebServer webServer;
     
     public Medusa() {
         log.setLevel(Level.ALL);
         configuration = new Configuration();
         log.log(Level.INFO, configuration.toString());
+        
+        webServer = new WebServer(configuration);
+        
+        // Declare Protocols
+        protocols = new Protocols(new IProtocol[]{new CoAP(configuration)});
+        
+        // Actions when exit
+        Runtime.getRuntime().addShutdownHook(
+            new Thread() {
+                @Override
+                public void run() {
+                    protocols.stopServers();
+                    try {
+                        webServer.stop();
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "WebServer", ex);
+                    }
+                }
+            }
+        );
     }
 
     @Override
     public void run() {
         log.log(Level.INFO, "Medusa ALIVE!");
-        // Start CoAP resources
+        // TODO: Check Configuration
+        
+        // Start Protocols
+        log.log(Level.INFO, protocols.toString());
+        protocols.startServers();
         
         // Start Web server
-        WebServer webServer = new WebServer(configuration);
         try {
             webServer.start();
             webServer.join();

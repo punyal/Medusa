@@ -21,15 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa;
+package com.punyal.medusa.core.protocols;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Main {
-    public static void main(String[] args) {
-        Medusa medusa = new Medusa();
-        medusa.run();
+public class Protocols {
+    private final List<IProtocol> protocols;
+    
+    public Protocols(IProtocol[] protocolArray) {
+        protocols = Arrays.asList(protocolArray);
+    }
+    
+    public void startServers() {
+        protocols.stream().forEach((protocol) -> {
+            protocol.start();
+        });
+    }
+    
+    public void stopServers() {
+        protocols.stream().forEach((protocol) -> {
+            protocol.stop();
+        });
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        // Humman readable configuration
+        sb.append("List of protocols\n");
+        protocols.stream().forEach((protocol) -> {
+            sb.append(protocol.getName()).append("\n");
+        });
+        return sb.toString();
     }
 }

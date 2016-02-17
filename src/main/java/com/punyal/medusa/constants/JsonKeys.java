@@ -21,15 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa;
+package com.punyal.medusa.constants;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Main {
-    public static void main(String[] args) {
-        Medusa medusa = new Medusa();
-        medusa.run();
-    }
+public class JsonKeys {
+    /* JSON keys */
+    public static final String JSON_KEY_VERSION = "version";
 }

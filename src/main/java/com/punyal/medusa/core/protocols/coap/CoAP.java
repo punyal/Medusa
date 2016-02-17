@@ -21,15 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa;
+package com.punyal.medusa.core.protocols.coap;
+
+import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.protocols.IProtocol;
+import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
+import org.eclipse.californium.core.CoapServer;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Main {
-    public static void main(String[] args) {
-        Medusa medusa = new Medusa();
-        medusa.run();
+public class CoAP implements IProtocol {
+    private final Configuration configuration;
+    private final CoapServer coapServer;
+    
+    public CoAP(Configuration configuration) {
+        this.configuration = configuration;
+        coapServer = new CoapServer(DEFAULT_COAP_PORT);
+        coapServer.add(new AuthenticationResource(configuration), new AuthorizationResource(configuration));
     }
+
+    @Override
+    public void start() {
+        coapServer.start();
+    }
+
+    @Override
+    public void stop() {
+        coapServer.stop();
+    }
+
+    @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+    
 }

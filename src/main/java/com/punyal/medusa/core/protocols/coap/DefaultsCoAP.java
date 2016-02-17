@@ -21,15 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.punyal.medusa;
+package com.punyal.medusa.core.protocols.coap;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class Main {
-    public static void main(String[] args) {
-        Medusa medusa = new Medusa();
-        medusa.run();
-    }
+public class DefaultsCoAP {
+    public static final int DEFAULT_COAP_PORT = 5683;
+    
+    /* Names */
+    public static final String RESOURCE_AUTHENTICATION_NAME = "Authentication";
+    public static final String RESOURCE_AUTHENTICATION_TITLE = "Authentication Resource";
+    public static final String RESOURCE_AUTHORIZATION_NAME = "Authorization";
+    public static final String RESOURCE_AUTHORIZATION_TITLE = "Authorization Resource";
+    
 }
