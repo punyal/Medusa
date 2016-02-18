@@ -1,0 +1,3 @@
+2016-02-18 20:41:02 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TEST" already exists; SQL statement:
+CREATE TABLE TEST(ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR); [42101-191]

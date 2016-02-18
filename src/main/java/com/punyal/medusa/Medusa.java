@@ -73,7 +73,7 @@ public class Medusa implements Runnable {
         // TODO: Check Configuration
         
         // Start Protocols
-        log.log(Level.INFO, protocols.toString());
+        /*log.log(Level.INFO, protocols.toString());
         protocols.startServers();
         
         // Start Web server
@@ -82,7 +82,7 @@ public class Medusa implements Runnable {
             webServer.join();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "WebServer", ex);
-        }
+        }*/
         
         log.log(Level.OFF, "Medusa DEAD!");
     }

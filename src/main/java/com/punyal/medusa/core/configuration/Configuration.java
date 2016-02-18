@@ -24,9 +24,7 @@
 package com.punyal.medusa.core.configuration;
 
 import static com.punyal.medusa.constants.Defaults.*;
-import com.punyal.medusa.core.db.NoDB;
 import com.punyal.medusa.core.security.CryptoEngine;
-import com.punyal.medusa.core.db.IDB;
 
 /**
  *
@@ -36,15 +34,13 @@ public class Configuration {
     /* All configurations here */
     private final ConfigurationWebServer confWebServer;
     private final CryptoEngine cryptoEngine;
-    private final IDB db;
     
     public Configuration() {
         /* Set DataBase */
-        db = new NoDB(); // NoDB
         
         /* Load defaults */
         confWebServer = new ConfigurationWebServer();
-        cryptoEngine = new CryptoEngine(db);
+        cryptoEngine = new CryptoEngine();
         
         
     }

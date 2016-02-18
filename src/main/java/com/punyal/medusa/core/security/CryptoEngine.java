@@ -24,8 +24,6 @@
 package com.punyal.medusa.core.security;
 
 import static com.punyal.medusa.constants.Defaults.*;
-import com.punyal.medusa.core.db.Device;
-import com.punyal.medusa.core.db.IDB;
 import java.net.InetAddress;
 import java.security.SecureRandom;
 
@@ -35,18 +33,17 @@ import java.security.SecureRandom;
  */
 public class CryptoEngine {
     private final SecureRandom randomizer;
-    private final IDB db;
     
-    public CryptoEngine(IDB db) {
+    public CryptoEngine() {
         randomizer = new SecureRandom();
-        this.db = db;
+        //this.db = db;
     }
     
     public synchronized Authenticator getNewAuthenticator(InetAddress address) {
         Authenticator authenticator = new Authenticator(generateNewAuthenticatorValue(), DEFAULT_AUTHENTICATOR_TIMEOUT);
-        Device device = new Device("null","null");
-        device.setAuthenticator(address, authenticator);
-        db.addDeviceInfo(device);
+        //Device device = new Device("null","null");
+        //device.setAuthenticator(address, authenticator);
+        //db.addDeviceInfo(device);
         return authenticator;
     }
     
