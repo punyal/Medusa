@@ -1,0 +1,9 @@
+2016-02-19 01:54:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "ADMIN" already exists; SQL statement:
+CREATE TABLE ADMIN ( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), PRIMARY KEY (ID)); [42101-191]
+2016-02-19 01:55:29 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "ADMIN" already exists; SQL statement:
+CREATE TABLE ADMIN ( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), PRIMARY KEY (ID)); [42101-191]
+2016-02-19 01:55:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "ADMIN" already exists; SQL statement:
+CREATE TABLE ADMIN ( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), PRIMARY KEY (ID)); [42101-191]

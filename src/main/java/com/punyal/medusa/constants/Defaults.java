@@ -36,6 +36,21 @@ public class Defaults {
     public static final int DEFAULT_WEB_PORT = 5000;
     public static final String DEFAULT_WEB_PATH = "/web";
     
+    /* Databases */
+    // H2
+    public static final String DEFAULT_H2_FOLDER = "MedusaH2";
+    
+    // Tables
+    public static final String DEFAULT_DB_TABLE_ADMIN = "ADMIN";
+    public static final String DEFAULT_DB_TABLE_ADMIN_INIT = "CREATE TABLE "+
+            DEFAULT_DB_TABLE_ADMIN+" ( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), PRIMARY KEY (ID));";
+    public static final String DEFAULT_DB_TABLE_ADMIN_USER = "admin";
+    public static final String DEFAULT_DB_TABLE_ADMIN_PASS = "admin";
+    public static final String DEFAULT_DB_TABLE_ADMIN_ADD_INITIAL_VALUES = "INSERT INTO "+
+            DEFAULT_DB_TABLE_ADMIN+"(NAME, PASS) VALUES ('"+DEFAULT_DB_TABLE_ADMIN_USER+
+            "', '"+DEFAULT_DB_TABLE_ADMIN_PASS+"')";
+    
+    
     /* Authenticator */
     public static final long DEFAULT_AUTHENTICATOR_TIMEOUT = 15000;// miliseconds
     

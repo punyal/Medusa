@@ -24,7 +24,14 @@
 package com.punyal.medusa.core.configuration;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import com.punyal.medusa.core.database.DBtools;
+import com.punyal.medusa.core.database.H2;
+import com.punyal.medusa.core.database.IDataBase;
 import com.punyal.medusa.core.security.CryptoEngine;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,14 +41,20 @@ public class Configuration {
     /* All configurations here */
     private final ConfigurationWebServer confWebServer;
     private final CryptoEngine cryptoEngine;
+    private final IDataBase database;
+    private boolean error;
+    private String errorMessage;
     
     public Configuration() {
         /* Set DataBase */
+        database = DBtools.orchestrate(new IDataBase[]{new H2(DEFAULT_H2_FOLDER)});
+        if (database == null) setConfigurationError("No database");
+        else
+            DBtools.initiate(database);
         
         /* Load defaults */
         confWebServer = new ConfigurationWebServer();
         cryptoEngine = new CryptoEngine();
-        
         
     }
     
@@ -51,7 +64,9 @@ public class Configuration {
         // Humman readable configuration
         sb.append("Medusa Configuration\n");
         sb.append("Version: ").append(MEDUSA_VERSION).append(".").append(MEDUSA_SUBVERSION).append("\n");
-        sb.append("[DataBases]\n");
+        sb.append("[Database]\n");
+        if (database == null) sb.append(" No database selected!\n");
+        else sb.append(" Type:").append(database.getName()).append("\n").append(" Tables: ").append(DBtools.getTables(database)).append("\n");
         sb.append("[Web Services]\n");
         sb.append(" - Port:").append(confWebServer.getPort()).append("\n");
         sb.append(" - FilesPath:").append(confWebServer.getFilesPath()).append("\n");
@@ -65,5 +80,18 @@ public class Configuration {
     
     public CryptoEngine getCryptoEngine() {
         return cryptoEngine;
+    }
+    
+    public void setConfigurationError(String errorMessage) {
+        this.errorMessage = errorMessage;
+        error = true;
+    }
+    
+    public boolean isOK() {
+        return !error;
+    }
+    
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

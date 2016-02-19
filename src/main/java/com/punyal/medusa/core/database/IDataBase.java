@@ -31,4 +31,8 @@ import java.sql.Connection;
  */
 public interface IDataBase {
     Connection getConnection();
+    boolean isServerON();
+    void stopServer();
+    void startServer();
+    String getName();
 }

@@ -34,27 +34,31 @@ import org.h2.tools.Server;
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
-public class H2DB implements IDataBase {
+public class H2 implements IDataBase {
     private Server serverH2DB;
+    private final String folderName;
+    private boolean status;
+    
     private Connection connection;
     
-    public H2DB(String folderName) throws SQLException {
-        serverH2DB = Server.createTcpServer(
-                        new String[] { "-tcpPort", "1337", "-tcp",
-                                "-tcpSSL", "-tcpAllowOthers" }).start();
-        
-        connection = DriverManager.getConnection("jdbc:h2:"+folderName+":");
-        
+    public H2(String folderName) {
+        this.folderName = folderName;
+        try {
+            serverH2DB = Server.createTcpServer(
+                    new String[] { "-tcpPort", "1337", "-tcp",
+                        "-tcpSSL", "-tcpAllowOthers" }).start();
+            status = true;
+        } catch (SQLException ex) {
+            serverH2DB = null;
+            status = false;
+        }
+                
         // Actions when exit
         Runtime.getRuntime().addShutdownHook(
             new Thread() {
                 @Override
                 public void run() {
                     serverH2DB.stop();
-                    try {
-                        connection.close();
-                    } catch (SQLException ex) {
-                    }
                 }
             }
         );
@@ -62,7 +66,36 @@ public class H2DB implements IDataBase {
 
     @Override
     public Connection getConnection() {
-        return connection;
+        try {
+            return DriverManager.getConnection("jdbc:h2:"+folderName+":"+serverH2DB.getURL().substring(4));
+        } catch (SQLException ex) {
+            return null;
+        }
     }
+
+    @Override
+    public boolean isServerON() {
+        return status;
+    }
+
+    @Override
+    public String getName() {
+        return H2.class.getSimpleName();
+    }
+
+    @Override
+    public void stopServer() {
+        serverH2DB.stop();
+    }
+
+    @Override
+    public void startServer() {
+        try {
+            serverH2DB.start();
+        } catch (SQLException ex) {
+            Logger.getLogger(H2.class.getName()).log(Level.SEVERE, "error starting server");
+        }
+    }
+    
     
 }
