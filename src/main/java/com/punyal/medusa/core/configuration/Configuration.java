@@ -28,6 +28,7 @@ import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.core.database.H2;
 import com.punyal.medusa.core.database.IDataBase;
 import com.punyal.medusa.core.database.MySQL;
+import com.punyal.medusa.core.database.MySQLconf;
 import com.punyal.medusa.core.security.CryptoEngine;
 
 /**
@@ -38,23 +39,27 @@ public class Configuration {
     /* All configurations here */
     private final ConfigurationWebServer confWebServer;
     private final CryptoEngine cryptoEngine;
-    private final IDataBase database;
+    private IDataBase database;
     private boolean error;
     private String errorMessage;
     
     public Configuration() {
         /* Set DataBase */
-        database = DBtools.orchestrate(new IDataBase[]{new MySQL("", "", "", ""),new H2(DEFAULT_H2_FOLDER)});
+        database = DBtools.orchestrate(new IDataBase[]{new MySQL(DEFAULT_MYSQL_HOST, DEFAULT_MYSQL_DATABASE, DEFAULT_MYSQL_USER, DEFAULT_MYSQL_PASSWORD),new H2(DEFAULT_H2_FOLDER)});
         if (database == null) setConfigurationError("No database");
-        else
-            DBtools.initiate(database);
+        else DBtools.initiate(database);
         
-        DBtools.changeAdminPass(database, "SoyPutoAmo");
         
         /* Load defaults */
         confWebServer = new ConfigurationWebServer();
         cryptoEngine = new CryptoEngine();
         
+    }
+    
+    public void configMySQL(MySQLconf newConf) {
+        database = DBtools.orchestrate(new IDataBase[]{new MySQL(newConf), database});
+        if (database == null) setConfigurationError("No database");
+        else DBtools.initiate(database);
     }
     
     @Override

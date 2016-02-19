@@ -23,11 +23,10 @@
  */
 package com.punyal.medusa.core.database;
 
+import com.punyal.medusa.logger.MedusaLogger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.h2.tools.Server;
 
 /**
@@ -35,6 +34,7 @@ import org.h2.tools.Server;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class H2 implements IDataBase {
+    private static final MedusaLogger log = new MedusaLogger();
     private Server serverH2DB;
     private final String folderName;
     private boolean status;
@@ -93,7 +93,7 @@ public class H2 implements IDataBase {
         try {
             serverH2DB.start();
         } catch (SQLException ex) {
-            Logger.getLogger(H2.class.getName()).log(Level.SEVERE, "error starting server");
+            log.error("Starting H2 server: "+ex.getMessage());
         }
     }
     

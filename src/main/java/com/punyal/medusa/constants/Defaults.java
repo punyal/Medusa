@@ -23,6 +23,9 @@
  */
 package com.punyal.medusa.constants;
 
+import com.punyal.medusa.logger.MedusaLogger;
+import static com.punyal.medusa.logger.MedusaLogger.GrainLevel.*;
+
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
@@ -32,6 +35,10 @@ public class Defaults {
     public static final int MEDUSA_VERSION = 2;
     public static final int MEDUSA_SUBVERSION = 1;
     
+    /* Logger */
+    public static final String DEFAULT_LOGGER_NAME = "MedusaLog";
+    public static final MedusaLogger.GrainLevel DEFAULT_LOGGER_LEVEL = DEB;
+    
     /* Web Server */
     public static final int DEFAULT_WEB_PORT = 5000;
     public static final String DEFAULT_WEB_PATH = "/web";
@@ -39,6 +46,12 @@ public class Defaults {
     /* Databases */
     // H2
     public static final String DEFAULT_H2_FOLDER = "MedusaH2";
+    
+    // MySQL
+    public static final String DEFAULT_MYSQL_HOST = "localhost";
+    public static final String DEFAULT_MYSQL_DATABASE = "Medusa";
+    public static final String DEFAULT_MYSQL_USER = "";
+    public static final String DEFAULT_MYSQL_PASSWORD = "";
     
     // Tables
     public static final String DEFAULT_DB_TABLE_ADMIN = "ADMIN";

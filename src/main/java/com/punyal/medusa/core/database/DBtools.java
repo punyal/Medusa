@@ -24,10 +24,9 @@
 package com.punyal.medusa.core.database;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import com.punyal.medusa.logger.MedusaLogger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -35,17 +34,22 @@ import java.util.logging.Logger;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class DBtools {
+    private static final MedusaLogger log = new MedusaLogger();
     public static IDataBase orchestrate(IDataBase[] databases) {
-        System.out.println("DB ORCHESTRATION!!");
+        log.debug("Database system Orchestration");
         for (IDataBase database: databases) {
-            System.out.println(database.getName());
-            if (database.isServerON() && database.getConnection() != null)
+            if (database.isServerON() && database.getConnection() != null) {
+                log.debug(database.getName()+" (selected)");
                 return database;
+            }
+            log.debug(database.getName()+" (discarted)");
         }
+        log.debug("No database system selected");
         return null;
     }
     
     public static void initiate(IDataBase database) {
+        log.debug("Initiate Admin Table");
         initiateAdmin(database);
     }
     
@@ -55,7 +59,7 @@ public class DBtools {
             database.getConnection().createStatement().executeUpdate(DEFAULT_DB_TABLE_ADMIN_ADD_INITIAL_VALUES);
             
         } catch (SQLException ex) {
-            //Logger.getLogger(DBtools.class.getName()).log(Level.SEVERE, "Error initiating Admin table");
+            log.debug("Error initiating Admin table: "+ex.getMessage());
         }
     }
     
@@ -68,7 +72,7 @@ public class DBtools {
             database.getConnection().createStatement().executeUpdate("DROP TABLE "+DEFAULT_DB_TABLE_ADMIN);
             
         } catch (SQLException ex) {
-            //Logger.getLogger(DBtools.class.getName()).log(Level.SEVERE, "Error initiating Admin table");
+            log.error("Deleting Admin table: "+ex.getMessage());
         }
     }
     
@@ -76,8 +80,8 @@ public class DBtools {
         try {
             database.getConnection().createStatement().executeUpdate("UPDATE "+
                     DEFAULT_DB_TABLE_ADMIN+" SET PASS='"+newPass+"' WHERE ID='1';");
-        } catch (SQLException ex) {
-            //Logger.getLogger(DBtools.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException|SQLException ex) {
+            log.error("Changing Admin Password: "+ex.getMessage());
         }
     }
     
@@ -90,7 +94,7 @@ public class DBtools {
                 sb.append(result.getString(1)).append(" ");
                 
         } catch (SQLException ex) {
-            Logger.getLogger(DBtools.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("Reading tables: "+ex.getMessage());
         }
         return sb.toString();
     }

@@ -28,10 +28,9 @@ import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.configuration.Configuration;
 import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
 import com.punyal.medusa.core.security.Authenticator;
+import com.punyal.medusa.logger.MedusaLogger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.californium.core.CoapResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 import static org.eclipse.californium.core.coap.MediaTypeRegistry.*;
@@ -43,6 +42,7 @@ import org.json.simple.JSONObject;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class AuthenticationResource extends CoapResource {
+    private static final MedusaLogger log = new MedusaLogger();
     private final Configuration configuration;
     
     public AuthenticationResource(Configuration configuration) {
@@ -59,7 +59,7 @@ public class AuthenticationResource extends CoapResource {
         try {
             authenticator = configuration.getCryptoEngine().getNewAuthenticator(InetAddress.getLocalHost());
         } catch (UnknownHostException ex) {
-            Logger.getLogger(AuthenticationResource.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("Unknown Host: "+ ex.getMessage());
         }
         
         json.put(JSON_KEY_AUTHENTICATOR, authenticator.getValue());

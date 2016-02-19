@@ -32,22 +32,20 @@ import java.sql.SQLException;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class MySQL implements IDataBase {
-    private final String server;
-    private final String dbname;
-    private final String user;
-    private final String password;
+    private final MySQLconf mySQLconf;
     
-    public MySQL(String server, String dbname, String user, String password) {
-        this.server = server;
-        this.dbname = dbname;
-        this.user = user;
-        this.password = password;
+    public MySQL(String host, String database, String user, String password) {
+        mySQLconf = new MySQLconf(host, database, user, password);
+    }
+    
+    public MySQL(MySQLconf mySQLconf) {
+        this.mySQLconf = mySQLconf;
     }
 
     @Override
     public Connection getConnection() {
         try {
-            return DriverManager.getConnection("jdbc:mysql://"+server+"/"+dbname, user, password);
+            return DriverManager.getConnection("jdbc:mysql://"+mySQLconf.getHost()+"/"+mySQLconf.getDatabase(), mySQLconf.getUser(), mySQLconf.getPassword());
         } catch (SQLException ex) {
             return null;
         }

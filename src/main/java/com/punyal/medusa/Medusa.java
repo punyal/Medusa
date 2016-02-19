@@ -24,28 +24,26 @@
 package com.punyal.medusa;
 
 import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.database.MySQLconf;
 import com.punyal.medusa.core.protocols.IProtocol;
 import com.punyal.medusa.core.protocols.Protocols;
 import com.punyal.medusa.core.protocols.coap.CoAP;
 import com.punyal.medusa.core.webserver.WebServer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.punyal.medusa.logger.MedusaLogger;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class Medusa implements Runnable {
-    private static final Logger log = Logger.getLogger(Medusa.class.getName());
+    private static final MedusaLogger log = new MedusaLogger();
     private final Configuration configuration;
-    private final Protocols protocols;
-    private final WebServer webServer;
+    private Protocols protocols;
+    private WebServer webServer;
     
     public Medusa() {
-        log.setLevel(Level.ALL);
         configuration = new Configuration();
-        log.log(Level.INFO, configuration.toString());
-        
+                
         
         webServer = new WebServer(configuration);
         
@@ -61,21 +59,27 @@ public class Medusa implements Runnable {
                     try {
                         webServer.stop();
                     } catch (Exception ex) {
-                        log.log(Level.SEVERE, "WebServer", ex);
+                        log.critical("WebServer Exception: "+ex.getMessage());
                     }
                 }
             }
         );
     }
+    
+    public void configMySQL(MySQLconf newConf) {
+        configuration.configMySQL(newConf);
+    }
 
     @Override
     public void run() {
-        log.log(Level.INFO, "Medusa ALIVE!");
+        log.info("Medusa alive");
+        log.info(configuration.toString());
+        
         
         if (configuration.isOK()) {
         
             // Start Protocols
-            /*log.log(Level.INFO, protocols.toString());
+            log.info(protocols.toString());
             protocols.startServers();
 
             // Start Web server
@@ -83,15 +87,14 @@ public class Medusa implements Runnable {
                 webServer.start();
                 webServer.join();
             } catch (Exception ex) {
-                log.log(Level.SEVERE, "WebServer", ex);
-            }*/
+                log.critical("WebServer: "+ex.getMessage());
+            }
         } else {
-            log.log(Level.SEVERE, configuration.getErrorMessage());
+            log.critical(configuration.getErrorMessage());
         }
         
-        log.log(Level.OFF, "Medusa DEAD!");
+        log.critical("Medusa dead");
+        System.exit(0);
     }
-    
-    
     
 }

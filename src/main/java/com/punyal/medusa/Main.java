@@ -23,13 +23,47 @@
  */
 package com.punyal.medusa;
 
+import com.punyal.medusa.core.MedusaCLI;
+import com.punyal.medusa.core.database.MySQLconf;
+import com.punyal.medusa.logger.MedusaLogger;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.ParseException;
+
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class Main {
+    private static final MedusaLogger log = new MedusaLogger();
+    
     public static void main(String[] args) {
+        MedusaCLI cli = new MedusaCLI();
         Medusa medusa = new Medusa();
+        
+        try {
+            CommandLine cmd = cli.getCLI(args);
+            
+            if (cmd.hasOption("help")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("Medusa", cli.getOptions());
+                System.exit(0);
+            }
+            
+            if (cmd.hasOption("MySQL")) {
+                MySQLconf mySQLconf = new MySQLconf(cmd.getOptionValues("MySQL"));
+                log.debug(mySQLconf.toString());
+                medusa.configMySQL(mySQLconf);
+            }
+            
+        } catch (ParseException ex) {
+            log.error("Parsing failed. Reason: "+ex.getMessage());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("Medusa", cli.getOptions());
+            System.exit(1);
+        }
+        
+        
         medusa.run();
     }
 }
