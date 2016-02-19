@@ -36,9 +36,10 @@ import java.util.logging.Logger;
  */
 public class DBtools {
     public static IDataBase orchestrate(IDataBase[] databases) {
+        System.out.println("DB ORCHESTRATION!!");
         for (IDataBase database: databases) {
-            // TODO: improve detection
-            if (database.isServerON())
+            System.out.println(database.getName());
+            if (database.isServerON() && database.getConnection() != null)
                 return database;
         }
         return null;

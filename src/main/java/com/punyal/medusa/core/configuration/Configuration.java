@@ -27,11 +27,8 @@ import static com.punyal.medusa.constants.Defaults.*;
 import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.core.database.H2;
 import com.punyal.medusa.core.database.IDataBase;
+import com.punyal.medusa.core.database.MySQL;
 import com.punyal.medusa.core.security.CryptoEngine;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -47,10 +44,12 @@ public class Configuration {
     
     public Configuration() {
         /* Set DataBase */
-        database = DBtools.orchestrate(new IDataBase[]{new H2(DEFAULT_H2_FOLDER)});
+        database = DBtools.orchestrate(new IDataBase[]{new MySQL("", "", "", ""),new H2(DEFAULT_H2_FOLDER)});
         if (database == null) setConfigurationError("No database");
         else
             DBtools.initiate(database);
+        
+        DBtools.changeAdminPass(database, "SoyPutoAmo");
         
         /* Load defaults */
         confWebServer = new ConfigurationWebServer();

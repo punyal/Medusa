@@ -24,7 +24,6 @@
 package com.punyal.medusa;
 
 import com.punyal.medusa.core.configuration.Configuration;
-import com.punyal.medusa.core.database.H2;
 import com.punyal.medusa.core.protocols.IProtocol;
 import com.punyal.medusa.core.protocols.Protocols;
 import com.punyal.medusa.core.protocols.coap.CoAP;
