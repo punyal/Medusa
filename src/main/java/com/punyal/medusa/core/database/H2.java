@@ -41,6 +41,10 @@ public class H2 implements IDataBase {
     
     private Connection connection;
     
+    public H2(H2conf h2conf) {
+        this(h2conf.getDatabase());
+    }
+    
     public H2(String folderName) {
         this.folderName = folderName;
         try {

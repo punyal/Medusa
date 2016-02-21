@@ -33,9 +33,11 @@ public class ConfigurationWebServer {
     private final int port;
     private final String filesPath;
     
-    public ConfigurationWebServer() {
+    public ConfigurationWebServer(int webPort) {
         /* Load default parameters */
-        port = DEFAULT_WEB_PORT;
+        port = (webPort == 0)?
+                DEFAULT_WEB_PORT:
+                webPort;
         filesPath = DEFAULT_WEB_PATH;
     }
     

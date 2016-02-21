@@ -41,10 +41,12 @@ public class MedusaCLI {
     public MedusaCLI() {
         parser = new DefaultParser();
         options = new Options();
-        
         options.addOption("h", "help", false, "Show this info");
-        options.addOption(OptionBuilder.withArgName("hots> <database> <user> <pass").hasArgs(4).withValueSeparator(' ').withDescription("Database configuration").create("MySQL"));
-        options.addOption(OptionBuilder.withArgName("newAdminUser> <newAdminPass").hasArgs(2).withValueSeparator(' ').withDescription("Reset databases and set new admin").create("resetDB"));
+        options.addOption(OptionBuilder.withArgName("hots> <database> <user> <pass").hasArgs(4).withValueSeparator(' ').withDescription("MySQL database configuration").create("MySQL"));
+        options.addOption(OptionBuilder.withArgName("database").hasArgs(1).withValueSeparator().withDescription("H2 database configuration").create("H2"));
+        //options.addOption(OptionBuilder.withArgName("newAdminUser> <newAdminPass").hasArgs(2).withValueSeparator(' ').withDescription("Reset databases and set new admin").create("resetDB"));
+        options.addOption(OptionBuilder.withArgName("port").hasArgs(1).withValueSeparator().withDescription("Set CoAP port").create("coap"));
+        options.addOption(OptionBuilder.withArgName("port").hasArgs(1).withValueSeparator().withDescription("Set Web port").create("web"));
     }
     
     public CommandLine getCLI(String[] args) throws ParseException {

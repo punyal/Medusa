@@ -24,6 +24,7 @@
 package com.punyal.medusa;
 
 import com.punyal.medusa.core.MedusaCLI;
+import com.punyal.medusa.core.database.H2conf;
 import com.punyal.medusa.core.database.MySQLconf;
 import com.punyal.medusa.logger.MedusaLogger;
 import org.apache.commons.cli.CommandLine;
@@ -39,7 +40,12 @@ public class Main {
     
     public static void main(String[] args) {
         MedusaCLI cli = new MedusaCLI();
-        Medusa medusa = new Medusa();
+        MySQLconf mySQLconf = null;
+        H2conf h2conf = null;
+        int coapPort = 0;
+        int webPort = 0;
+        
+        
         
         try {
             CommandLine cmd = cli.getCLI(args);
@@ -51,9 +57,23 @@ public class Main {
             }
             
             if (cmd.hasOption("MySQL")) {
-                MySQLconf mySQLconf = new MySQLconf(cmd.getOptionValues("MySQL"));
+                mySQLconf = new MySQLconf(cmd.getOptionValues("MySQL"));
                 log.debug(mySQLconf.toString());
-                medusa.configMySQL(mySQLconf);
+            }
+            
+            if (cmd.hasOption("H2")) {
+                h2conf = new H2conf(cmd.getOptionValue("H2"));
+                log.debug(h2conf.toString());
+            }
+            
+            if (cmd.hasOption("coap")) {
+                coapPort = Integer.parseInt(cmd.getOptionValue("coap"));
+                log.debug("CoAP port: "+coapPort);
+            }
+            
+            if (cmd.hasOption("web")) {
+                webPort = Integer.parseInt(cmd.getOptionValue("web"));
+                log.debug("Web port: "+webPort);
             }
             
         } catch (ParseException ex) {
@@ -63,7 +83,7 @@ public class Main {
             System.exit(1);
         }
         
-        
+        Medusa medusa = new Medusa(mySQLconf, h2conf, coapPort, webPort);
         medusa.run();
     }
 }

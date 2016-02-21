@@ -26,6 +26,7 @@ package com.punyal.medusa.core.configuration;
 import static com.punyal.medusa.constants.Defaults.*;
 import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.core.database.H2;
+import com.punyal.medusa.core.database.H2conf;
 import com.punyal.medusa.core.database.IDataBase;
 import com.punyal.medusa.core.database.MySQL;
 import com.punyal.medusa.core.database.MySQLconf;
@@ -38,29 +39,31 @@ import com.punyal.medusa.core.security.CryptoEngine;
 public class Configuration {
     /* All configurations here */
     private final ConfigurationWebServer confWebServer;
+    private final ConfigurationCoAPServer confCoapServer;
     private final CryptoEngine cryptoEngine;
     private IDataBase database;
     private boolean error;
     private String errorMessage;
     
-    public Configuration() {
-        /* Set DataBase */
-        database = DBtools.orchestrate(new IDataBase[]{new MySQL(DEFAULT_MYSQL_HOST, DEFAULT_MYSQL_DATABASE, DEFAULT_MYSQL_USER, DEFAULT_MYSQL_PASSWORD),new H2(DEFAULT_H2_FOLDER)});
+    public Configuration(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort) {
+        /* Set Database */
+        H2 h2 = (h2conf == null ) ?
+                new H2(DEFAULT_H2_FOLDER):
+                new H2(h2conf);
+        MySQL mySQL = (mySQLconf == null) ?
+                new MySQL(DEFAULT_MYSQL_HOST, DEFAULT_MYSQL_DATABASE, DEFAULT_MYSQL_USER, DEFAULT_MYSQL_PASSWORD):
+                new MySQL(mySQLconf);
+        database = DBtools.orchestrate(new IDataBase[]{mySQL, h2});
         if (database == null) setConfigurationError("No database");
         else DBtools.initiate(database);
-        
         
         /* Load defaults */
-        confWebServer = new ConfigurationWebServer();
+        confCoapServer = new ConfigurationCoAPServer(coapPort);
+        confWebServer = new ConfigurationWebServer(webPort);
         cryptoEngine = new CryptoEngine();
-        
     }
     
-    public void configMySQL(MySQLconf newConf) {
-        database = DBtools.orchestrate(new IDataBase[]{new MySQL(newConf), database});
-        if (database == null) setConfigurationError("No database");
-        else DBtools.initiate(database);
-    }
+    
     
     @Override
     public String toString() {
@@ -80,6 +83,10 @@ public class Configuration {
     
     public ConfigurationWebServer getConfigurationWebServer() {
         return confWebServer;
+    }
+    
+    public ConfigurationCoAPServer getConfigurationCoapServer() {
+        return confCoapServer;
     }
     
     public CryptoEngine getCryptoEngine() {

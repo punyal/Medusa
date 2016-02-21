@@ -25,7 +25,6 @@ package com.punyal.medusa.core.protocols.coap;
 
 import com.punyal.medusa.core.configuration.Configuration;
 import com.punyal.medusa.core.protocols.IProtocol;
-import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
 import org.eclipse.californium.core.CoapServer;
 
 /**
@@ -38,7 +37,7 @@ public class CoAP implements IProtocol {
     
     public CoAP(Configuration configuration) {
         this.configuration = configuration;
-        coapServer = new CoapServer(DEFAULT_COAP_PORT);
+        coapServer = new CoapServer(configuration.getConfigurationCoapServer().getPort());
         coapServer.add(new AuthenticationResource(configuration), new AuthorizationResource(configuration));
     }
 

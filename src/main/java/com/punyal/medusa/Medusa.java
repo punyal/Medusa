@@ -24,6 +24,7 @@
 package com.punyal.medusa;
 
 import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.database.H2conf;
 import com.punyal.medusa.core.database.MySQLconf;
 import com.punyal.medusa.core.protocols.IProtocol;
 import com.punyal.medusa.core.protocols.Protocols;
@@ -41,8 +42,8 @@ public class Medusa implements Runnable {
     private Protocols protocols;
     private WebServer webServer;
     
-    public Medusa() {
-        configuration = new Configuration();
+    public Medusa(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort) {
+        configuration = new Configuration(mySQLconf, h2conf, coapPort, webPort);
                 
         
         webServer = new WebServer(configuration);
@@ -66,9 +67,6 @@ public class Medusa implements Runnable {
         );
     }
     
-    public void configMySQL(MySQLconf newConf) {
-        configuration.configMySQL(newConf);
-    }
 
     @Override
     public void run() {
