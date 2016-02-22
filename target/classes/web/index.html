@@ -24,11 +24,99 @@ THE SOFTWARE.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Medusa Server</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Medusa CSS Core -->
+        <link rel='stylesheet prefetch' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css'>
+        <link rel='stylesheet prefetch' href='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
+        <link rel="stylesheet" href="css/medusa.css">
+        
     </head>
     <body>
-        <div>TODO write content</div>
+        <div class="container">
+            <h1>Medusa Server</h1>
+            <p>Device Manager <strong>be careful, changes affect other users</strong>.</p>
+            <p>Server Info: <a id="serverInfo"></a></p>
+            <ul>
+                <li>Time: <a id="serverTime"></a></li>
+                <li>Public IPs: <a id="serverPublicIPs"></a></li>
+                <li>Local IPs: <a id="serverLocalIPs"></a></li>
+            </ul>
+            
+            <div id="table" class="table-editable">
+                <span class="table-add glyphicon glyphicon-plus"></span>
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Status</th>
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th>Login</th>
+                        <th>IP</th>
+                        <th>Protocol</th>
+                        <th>Valid</th>
+                        <th>Timeout</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td class="id">1</td>
+                        <td class="status">OK</td>
+                        <td contenteditable="false">Rockbolt 123</td>
+                        <td contenteditable="true" class="changeable">******</td>
+                        <td>2016-02-21 18:13:13.123</td>
+                        <td>0.0.0.0</td>
+                        <td>CoAP</td>
+                        <td>True</td>
+                        <td>2016-02-21 18:33:13.134</td>
+                        <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="id">2</td>
+                        <td class="status">OK</td>
+                        <td contenteditable="false">Rockbolt 232</td>
+                        <td contenteditable="true" class="changeable">******</td>
+                        <td>2016-02-21 18:13:13.321</td>
+                        <td>0.0.0.0</td>
+                        <td>CoAP</td>
+                        <td>True</td>
+                        <td>2016-02-21 18:33:13.322</td>
+                        <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+                    </tr>
+                    <!-- This is our clonable table line -->
+                    <tr class="hide">
+                        <td class="id">0</td>
+                        <td class="status">new</td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <button id="export-btn" class="btn btn-primary">Save All Changes</button>
+            <p id="response"></p>
+        
+            
+            <footer style="text-align: center;">
+                <small >© 2016, Pablo Puñal Pereira - <a href="http://www.punyal.com" target="_blank">www.punyal.com</a></small>
+            </footer>
+        </div>
+        
+        
+        
+        <!-- Medusa JS Core -->
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
+        <script src='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js'></script>
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js'></script>
+        <script src="js/medusa.js"></script>
+        
     </body>
 </html>

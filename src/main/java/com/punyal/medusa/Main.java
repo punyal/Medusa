@@ -83,7 +83,10 @@ public class Main {
             System.exit(1);
         }
         
+
+        
         Medusa medusa = new Medusa(mySQLconf, h2conf, coapPort, webPort);
         medusa.run();
+        
     }
 }

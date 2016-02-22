@@ -36,7 +36,7 @@ public class WebServer extends Server {
     public WebServer(Configuration configuration) {
         super(configuration.getConfigurationWebServer().getPort());
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{ new FilesHandler(configuration.getConfigurationWebServer().getFilesPath()) });
+        handlers.setHandlers(new Handler[]{ new FilesHandler(configuration.getConfigurationWebServer().getFilesPath()), new AjaxHandler(configuration) });
         setHandler(handlers);
     }
 }
