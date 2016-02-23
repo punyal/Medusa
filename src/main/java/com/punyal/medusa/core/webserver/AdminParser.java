@@ -25,6 +25,8 @@ package com.punyal.medusa.core.webserver;
 
 import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.MedusaDevice;
+import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.logger.MedusaLogger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,9 +37,11 @@ import org.json.simple.JSONObject;
  */
 public class AdminParser {
     private static final MedusaLogger log = new MedusaLogger();
+    private final Configuration configuration;
     
-    public AdminParser() {
-        
+    
+    public AdminParser(Configuration configuration) {
+        this.configuration = configuration;
     }
     
     public boolean parseRequest(JSONArray allItems) {
@@ -61,9 +65,11 @@ public class AdminParser {
                         break;
                     case "new":
                         log.debug("new");
+                        DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString());
                         break;
                     case "delete":
                         log.debug("delete");
+                        DBtools.deleteDevice(configuration.getDatabase(), Integer.parseInt(json.get(JSON_KEY_ID).toString()));
                         break;
                     case "changed":
                         log.debug("changed");

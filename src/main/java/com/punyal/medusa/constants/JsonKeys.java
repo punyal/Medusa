@@ -30,14 +30,18 @@ package com.punyal.medusa.constants;
 public class JsonKeys {
     /* JSON keys */
     public static final String JSON_KEY_AUTHENTICATOR = "authenticator";
+    public static final String JSON_KEY_DEVICES = "devices";
     public static final String JSON_KEY_ID = "id";
+    public static final String JSON_KEY_IP = "ip";
     public static final String JSON_KEY_LAST_LOGIN = "login";
     public static final String JSON_KEY_LOCAL_IP = "local_ip";
     public static final String JSON_KEY_NAME = "name";
     public static final String JSON_KEY_PASSWORD = "password";
+    public static final String JSON_KEY_PROTOCOLS = "protocols";
     public static final String JSON_KEY_PUBLIC_IP = "public_ip";
     public static final String JSON_KEY_RESPONSE = "response";
     public static final String JSON_KEY_STATUS = "status";
+    public static final String JSON_KEY_TICKET = "ticket";
     public static final String JSON_KEY_TIMEOUT = "timeout";
     public static final String JSON_KEY_TIME = "time";
     public static final String JSON_KEY_VALID = "valid";

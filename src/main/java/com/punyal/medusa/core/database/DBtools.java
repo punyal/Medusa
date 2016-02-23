@@ -24,9 +24,12 @@
 package com.punyal.medusa.core.database;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import com.punyal.medusa.core.MedusaDevice;
 import com.punyal.medusa.logger.MedusaLogger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -49,11 +52,13 @@ public class DBtools {
     }
     
     public static void initiate(IDataBase database) {
-        log.debug("Initiate Admin Table");
-        initiateAdmin(database);
+        log.debug("Initiate database");
+        initiateAdminTable(database);
+        initiateDevicesTable(database);
     }
     
-    private static void initiateAdmin(IDataBase database) {
+    private static void initiateAdminTable(IDataBase database) {
+        log.debug("Initiate Admin Table");
         try {
             database.getConnection().createStatement().executeUpdate(DEFAULT_DB_TABLE_ADMIN_INIT);
             database.getConnection().createStatement().executeUpdate(DEFAULT_DB_TABLE_ADMIN_ADD_INITIAL_VALUES);
@@ -63,33 +68,109 @@ public class DBtools {
         }
     }
     
-    public static void delete(IDataBase database) {
-        deleteAdmin(database);
+    private static void initiateDevicesTable(IDataBase database) {
+        log.debug("Initiate Devices Table");
+        try {
+            database.getConnection().createStatement().executeUpdate(DEFAULT_DB_TABLE_DEVICES_INIT);
+            
+        } catch (SQLException ex) {
+            log.debug("Error initiating Devices table: "+ex.getMessage());
+        }
     }
     
-    public static void deleteAdmin(IDataBase database) {
+    public static void delete(IDataBase database) {
+        deleteAdminTable(database);
+        deleteDevicesTable(database);
+    }
+    
+    private static void deleteAdminTable(IDataBase database) {
         try {
-            database.getConnection().createStatement().executeUpdate("DROP TABLE "+DEFAULT_DB_TABLE_ADMIN);
-            
+            String sql = "DROP TABLE "+DEFAULT_DB_TABLE_ADMIN;
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
         } catch (SQLException ex) {
             log.error("Deleting Admin table: "+ex.getMessage());
         }
     }
     
-    public static void changeAdminPass(IDataBase database, String newPass) {
+    private static void deleteDevicesTable(IDataBase database) {
         try {
-            database.getConnection().createStatement().executeUpdate("UPDATE "+
-                    DEFAULT_DB_TABLE_ADMIN+" SET PASS='"+newPass+"' WHERE ID='1';");
+            String sql = "DROP TABLE "+DEFAULT_DB_TABLE_DEVICES;
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException ex) {
+            log.error("Deleting Devices table: "+ex.getMessage());
+        }
+    }
+    
+    public static void addNewDevice(IDataBase database, String name, String password) {
+        addNewDevice(database, name, password, "", "", false, 0, 0, "");
+    }
+    
+    public static void addNewDevice(IDataBase database, String name, String password, String address, String ticket, boolean valid, long timeout, long lastlogin, String protocols) {
+        String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
+                    +" WHERE NAME = '"+name+"';";
+        try {
+            //SELECT * FROM `DEVICES` WHERE `NAME` = 'pablo'
+            log.debug(sql);
+            ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
+            if (rs.next()) // This item is already on the table
+            {
+                log.debug("addNewDevice: "+name+" is already at the database");
+                return;
+            }
+            sql = "INSERT INTO "+DEFAULT_DB_TABLE_DEVICES
+                    +"(NAME, PASS, ADDRESS, TICKET, VALID, TIMEOUT, LASTLOGIN, PROTOCOLS) VALUES ('"+name+"','"+password+"','"+address+"','"+ticket+"','"+(valid?1:0)+"','"+timeout+"','"+lastlogin+"','"+protocols+"');";
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException ex) {
+            log.error("Adding Devices table: "+ex.getMessage());
+        }
+    }
+    
+    public static void deleteDevice(IDataBase database, int id) {
+        String sql = "DELETE FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE ID = "+id;
+        try {
+            database.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException ex) {
+            log.error("delete device: "+ex.getMessage());
+        }
+    }
+    
+    public static List<MedusaDevice> getDevicesList(IDataBase database) {
+        List<MedusaDevice> list = new ArrayList<>();
+        
+        try {
+            ResultSet rs = database.getConnection().createStatement().executeQuery("SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES);
+            
+            while(rs.next())
+                list.add(new MedusaDevice(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getBoolean(6), rs.getLong(7), rs.getLong(8), rs.getString(9)));
+            
+        } catch (SQLException ex) {
+            log.error("getDevicesList: "+ex.getMessage());
+        }
+        
+        return list;
+    } 
+    
+    public static void changeAdminPass(IDataBase database, String newPass) {
+        String sql = "UPDATE "+
+                    DEFAULT_DB_TABLE_ADMIN+" SET PASS='"+newPass+"' WHERE ID='1';";
+        try {
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
         } catch (NullPointerException|SQLException ex) {
             log.error("Changing Admin Password: "+ex.getMessage());
         }
     }
     
     public static String getTables(IDataBase database) {
+        String sql = "SHOW TABLES;";
         ResultSet result;
         StringBuilder sb = new StringBuilder();
         try {
-            result = database.getConnection().createStatement().executeQuery("SHOW TABLES;");
+            log.debug(sql);
+            result = database.getConnection().createStatement().executeQuery(sql);
             while (result.next())
                 sb.append(result.getString(1)).append(" ");
                 

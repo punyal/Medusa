@@ -36,28 +36,33 @@ public class MedusaDevice {
     private int id;
     private final String name;
     private String password;
+    private String address;
+    private String ticket;
     private boolean valid;
-    private long lastLogin;
     private long timeout;
+    private long lastLogin;
+    private String protocols;
     
-    public MedusaDevice(int id, String name, String password, boolean valid, long lastLogin, long timeout) {
+    public MedusaDevice(int id, String name, String password, String address, String ticket, boolean valid, long timeout, long lastLogin, String protocols) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.address = address;
+        this.ticket = ticket;
         this.valid = valid;
         this.lastLogin = lastLogin;
         this.timeout = timeout;
+        this.protocols = protocols;
     }
     
-    public MedusaDevice(int id, String name, String password, boolean valid, String lastLogin, String timeout) {
+    public MedusaDevice(int id, String name, String password, String address, String ticket, boolean valid, String timeout, String lastLogin, String protocols) {
         this.id = id;
         this.name = name;
         this.password = password;
-        this.valid = valid;
-        
+        this.address = address;
+        this.ticket = ticket;        
+        this.valid = valid;        
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        
-        
         try {
             this.lastLogin = ((format).parse(lastLogin)).getTime();
         } catch (ParseException ex) {
@@ -68,16 +73,19 @@ public class MedusaDevice {
         } catch (ParseException ex) {
             this.timeout = 0;
         }
-        
+        this.protocols = protocols;
     }
     
     public MedusaDevice(String name, String password) {
         this.id = 0;
         this.name = name;
         this.password = password;
+        this.address = "";
+        this.ticket = "";
         this.valid = false;
         this.lastLogin = 0;
         this.timeout = 0;
+        this.protocols = "";
     }
     
     public void changePassword(String password) {
@@ -116,6 +124,14 @@ public class MedusaDevice {
         return password;
     }
     
+    public String getIP() {
+        return address;
+    }
+    
+    public String getTicket() {
+        return ticket;
+    }
+    
     public boolean isValid() {
         return valid;
     }
@@ -128,6 +144,10 @@ public class MedusaDevice {
         return timeout;
     }
     
+    public String getProtocols() {
+        return protocols;
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -136,9 +156,12 @@ public class MedusaDevice {
         sb.append("Device id: ").append(id).append("\n");
         sb.append("\tName: ").append(name).append("\n");
         sb.append("\tPassword: ").append(password).append("\n");
+        sb.append("\tIP: ").append(address).append("\n");
+        sb.append("\tTicket: ").append(ticket).append("\n");
         sb.append("\tValid: ").append(valid).append("\n");
-        sb.append("\tLast Login: ").append(format.format(lastLogin)).append("\n");
         sb.append("\tTimeout:    ").append(format.format(timeout)).append("\n");
+        sb.append("\tLast Login: ").append(format.format(lastLogin)).append("\n");
+        sb.append("\tProtocols: ").append(protocols).append("\n");
         return sb.toString();
     }
 }

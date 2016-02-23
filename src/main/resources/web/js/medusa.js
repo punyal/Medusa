@@ -126,7 +126,38 @@ function getServerInfo() {
             //$SERVERINFO.html(JSON.stringify(data));
             $SERVERTIME.html(data.time);
             $SERVERPUBLICIPS.html(data.public_ip);
-            $SERVERLOCALIPS.html(data.local_ip)
+            $SERVERLOCALIPS.html(data.local_ip);
+            
+            console.log("devices: "+data.devices.length);
+            
+            for (var i=0; i<data.devices.length; i++) {
+                // {"valid":false,"ticket":"","ip":"","name":"pablo","id":1,"login":0,"protocols":"","timeout":0}
+                console.log(data.devices[i].id+" OK "+data.devices[i].name+" ********** "+data.devices[i].login+" "+data.devices[i].ip+" "+data.devices[i].protocols+" "+data.devices[i].valid+" "+data.devices[i].timeout+" ");
+                //var device = "<tr>"+
+                        "<td class=\"id\">"+data.devices[i].id+"</td>"+
+                        "<td class=\"status\">OK</td>"+
+                        "<td contenteditable=\"false\">"+data.devices[i].name+"</td>"+
+                        "<td contenteditable=\"true\" class=\"changeable\">******</td>"+
+                        "<td>"+data.devices[i].login+"</td>"+
+                        "<td>"+data.devices[i].ip+"</td>"+
+                        "<td>"+data.devices[i].protocols+"</td>"+
+                        "<td>"+data.devices[i].valid+"</td>"+
+                        "<td>"+data.devices[i].timeout+"</td>"+
+                        "<td><span class=\"table-remove glyphicon glyphicon-remove\"></span></td>"+
+                        "</tr>";
+                //$TABLE.find('table').append(device);
+                //$TABLE.find('tr.hide.id')
+                
+                
+                var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+                console.log($clone.valueOf());
+                
+                $TABLE.find('table').append($clone);
+                //$clone.
+                //$TABLE.find('table').append($clone);
+                //$TABLE.find('table tr:last').closest('td').siblings('.id').html(data.devices[i].id);
+            }
+            
         },
         error: function(error, status, errorCode) {
             console.log("Error: "+error+" Status: "+status+" Code: "+errorCode);

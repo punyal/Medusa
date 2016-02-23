@@ -38,10 +38,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -120,6 +117,10 @@ public class Configuration {
         sb.append(" - FilesPath:").append(confWebServer.getFilesPath()).append("\n");
         sb.append("[CoAP Services]\n");
         return sb.toString();
+    }
+    
+    public IDataBase getDatabase() {
+        return database;
     }
     
     public String getPublicIP() {

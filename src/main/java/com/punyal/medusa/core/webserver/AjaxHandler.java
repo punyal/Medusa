@@ -24,14 +24,18 @@
 package com.punyal.medusa.core.webserver;
 
 import static com.punyal.medusa.constants.JsonKeys.*;
+import com.punyal.medusa.core.MedusaDevice;
 import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.logger.MedusaLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,8 +55,8 @@ public class AjaxHandler extends AbstractHandler {
     private final Configuration configuration;
     
     public AjaxHandler(Configuration configuration) {
-        adminParser = new AdminParser();
         this.configuration = configuration;
+        adminParser = new AdminParser(configuration);
     }
 
     @Override
@@ -67,6 +71,37 @@ public class AjaxHandler extends AbstractHandler {
                 json.put(JSON_KEY_LOCAL_IP, configuration.getLocalIP());
                 //json.put(KEY_VERSION, UNIVERSE_VERSION+"."+UNIVERSE_SUBVERSION);
                 //json.put(KEY_TOTAL_REQUEST, configuration.getLoggerTotalLogs());
+                
+                List<MedusaDevice> devices = DBtools.getDevicesList(configuration.getDatabase());
+                
+                log.debug("Number of devices: "+devices.size());
+                for(MedusaDevice device:devices)
+                    log.debug(device.toString());
+                
+                
+                JSONArray jsonDevices = new JSONArray();
+                JSONObject jsonDevice;
+                
+                for (MedusaDevice device:devices) {
+                    jsonDevice = new JSONObject();
+                    
+                    jsonDevice.put(JSON_KEY_ID, device.getId());
+                    jsonDevice.put(JSON_KEY_NAME, device.getName());
+                    jsonDevice.put(JSON_KEY_LAST_LOGIN, device.getLastLogin());
+                    jsonDevice.put(JSON_KEY_IP, device.getIP());
+                    jsonDevice.put(JSON_KEY_TICKET, device.getTicket());
+                    jsonDevice.put(JSON_KEY_VALID, device.isValid());
+                    jsonDevice.put(JSON_KEY_TIMEOUT, device.getTimeout());
+                    jsonDevice.put(JSON_KEY_LAST_LOGIN, device.getLastLogin());
+                    jsonDevice.put(JSON_KEY_PROTOCOLS, device.getProtocols());
+                    
+                    jsonDevices.add(jsonDevice);
+                }
+                
+                
+                json.put(JSON_KEY_DEVICES, jsonDevices);
+                
+                
                 break;
             case "updateDevicesList":
                 log.debug("AjaxHandler - updateDevicesList");
@@ -88,6 +123,8 @@ public class AjaxHandler extends AbstractHandler {
                 log.error("AjaxHandler - "+target.substring(1)+" does not exist");
                 break;
         }
+        
+        log.debug(json.toJSONString());
         
         if (!json.isEmpty()) {
             response.setContentType("application/json");

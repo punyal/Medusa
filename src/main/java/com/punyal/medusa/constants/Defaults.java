@@ -62,6 +62,9 @@ public class Defaults {
     public static final String DEFAULT_DB_TABLE_ADMIN_ADD_INITIAL_VALUES = "INSERT INTO "+
             DEFAULT_DB_TABLE_ADMIN+"(NAME, PASS) VALUES ('"+DEFAULT_DB_TABLE_ADMIN_USER+
             "', '"+DEFAULT_DB_TABLE_ADMIN_PASS+"')";
+    public static final String DEFAULT_DB_TABLE_DEVICES = "DEVICES";
+    public static final String DEFAULT_DB_TABLE_DEVICES_INIT = "CREATE TABLE "+
+            DEFAULT_DB_TABLE_DEVICES+"( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), ADDRESS varchar(20), TICKET varchar(20), VALID boolean, TIMEOUT BIGINT, LASTLOGIN BIGINT, PROTOCOLS varchar(255), PRIMARY KEY (ID));";
     
     
     /* Authenticator */
