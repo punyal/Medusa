@@ -1,6 +1,7 @@
 var $TABLE = $('#table');
 var $BTN = $('#export-btn');
 var $RESPONSE = $('#response');
+var $AUTORELOAD = $('#auto-reload');
 var $PRESSED = false;
 var $SERVERTIME = $('#serverTime');
 var $SERVERPUBLICIPS = $('#serverPublicIPs');
@@ -12,6 +13,7 @@ $('.table-add').click(function () {
 });
 
 $('.table-remove').click(function () {
+    console.log("remove");
     $(this).closest('td').siblings('.status').html('delete');
     if ($(this).closest('td').siblings('.id').text() === '?')
         $(this).parents('tr').detach();
@@ -43,10 +45,10 @@ jQuery.fn.shift = [].shift;
 
 function reloadCountdown() {
     var timer = 5;
-    $RESPONSE.append(".<br> Auto-reload in "+timer);
+    $AUTORELOAD.append("Auto-reload in "+timer);
     setInterval(function() {
         timer--;
-        $RESPONSE.append(", "+timer);
+        $AUTORELOAD.append(", "+timer);
         if (timer < 1) location.reload();
     },1000);
 }
@@ -70,7 +72,7 @@ $BTN.click(function () {
     
     // Use the headers from earlier to name our hash keys
     headers.forEach(function (header, i) {
-      h[header] = $td.eq(i).text();   
+      h[header] = $td.eq(i).text();
     });
     
     data.push(h);
@@ -78,7 +80,9 @@ $BTN.click(function () {
   
   // Output the result
   
-  console.log(JSON.stringify(data));
+  //console.log(JSON.stringify(data));
+  
+  $("#export-btn").text('Saving...');
   
   $.ajax({
         url: "updateDevicesList",
@@ -90,8 +94,8 @@ $BTN.click(function () {
         success: function(data) {
             console.log("updateDeviceList OK");
             console.log(JSON.stringify(data));
-            if (data.response === true)
-                $RESPONSE.text("DONE saved "+data.length+" elements");
+            if (data.response === true) 
+                $RESPONSE.text(JSON.stringify(data));
             else
                 $RESPONSE.text("Problem");
         },
@@ -131,31 +135,22 @@ function getServerInfo() {
             console.log("devices: "+data.devices.length);
             
             for (var i=0; i<data.devices.length; i++) {
-                // {"valid":false,"ticket":"","ip":"","name":"pablo","id":1,"login":0,"protocols":"","timeout":0}
-                console.log(data.devices[i].id+" OK "+data.devices[i].name+" ********** "+data.devices[i].login+" "+data.devices[i].ip+" "+data.devices[i].protocols+" "+data.devices[i].valid+" "+data.devices[i].timeout+" ");
-                //var device = "<tr>"+
-                        "<td class=\"id\">"+data.devices[i].id+"</td>"+
-                        "<td class=\"status\">OK</td>"+
-                        "<td contenteditable=\"false\">"+data.devices[i].name+"</td>"+
-                        "<td contenteditable=\"true\" class=\"changeable\">******</td>"+
-                        "<td>"+data.devices[i].login+"</td>"+
-                        "<td>"+data.devices[i].ip+"</td>"+
-                        "<td>"+data.devices[i].protocols+"</td>"+
-                        "<td>"+data.devices[i].valid+"</td>"+
-                        "<td>"+data.devices[i].timeout+"</td>"+
-                        "<td><span class=\"table-remove glyphicon glyphicon-remove\"></span></td>"+
-                        "</tr>";
-                //$TABLE.find('table').append(device);
-                //$TABLE.find('tr.hide.id')
-                
-                
                 var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
-                console.log($clone.valueOf());
+                var $td = $($clone).find('td');
+                
+                $td.eq(0).html(data.devices[i].id);
+                $td.eq(1).html('OK');
+                $td.eq(2).html(data.devices[i].name);
+                $td.eq(2).attr('contenteditable','false');
+                $td.eq(3).html('**********');
+                $td.eq(4).html(data.devices[i].login);
+                $td.eq(5).html(data.devices[i].ip);
+                $td.eq(6).html(data.devices[i].protocols);
+                $td.eq(7).html(data.devices[i].valid);
+                $td.eq(8).html(data.devices[i].timeout);
                 
                 $TABLE.find('table').append($clone);
-                //$clone.
-                //$TABLE.find('table').append($clone);
-                //$TABLE.find('table tr:last').closest('td').siblings('.id').html(data.devices[i].id);
+                $TABLE.find('id').replaceWith(":)");
             }
             
         },

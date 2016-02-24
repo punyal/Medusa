@@ -60,24 +60,12 @@ THE SOFTWARE.
                         <th>Timeout</th>
                         <th></th>
                     </tr>
-                    <!-- tr>
-                        <td class="id">1</td>
-                        <td class="status">OK</td>
-                        <td contenteditable="false">Rockbolt 123</td>
-                        <td contenteditable="true" class="changeable">******</td>
-                        <td>2016-02-21 18:13:13.123</td>
-                        <td>0.0.0.0</td>
-                        <td>CoAP</td>
-                        <td>True</td>
-                        <td>2016-02-21 18:33:13.134</td>
-                        <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
-                    </tr -->
                     <!-- This is our clonable table line -->
                     <tr class="hide">
-                        <td class="id">0</td>
+                        <td class="id"><div id="id"></div></td>
                         <td class="status">new</td>
-                        <td contenteditable="true" class="name"></td>
-                        <td contenteditable="true" class="pass"></td>
+                        <td class="name" contenteditable="true"></td>
+                        <td class="pass" contenteditable="true"></td>
                         <td class="login"></td>
                         <td class="ip"></td>
                         <td class="protocol"></td>
@@ -89,7 +77,8 @@ THE SOFTWARE.
             </div>
             
             <button id="export-btn" class="btn btn-primary">Save All Changes</button>
-            <p id="response"></p>
+            <p><a id="response"></a></p>
+            <p id="auto-reload"></p>
         
             
             <footer style="text-align: center;">
