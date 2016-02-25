@@ -19,12 +19,11 @@ $('.table-remove').click(function () {
         $(this).parents('tr').detach();
 });
 
-var contents = $('.changeable').html();
 $('.changeable').blur(function() {
-    if (contents!=$(this).html() && ($(this).closest('td').siblings('.status').text() !== 'delete') ){
-        contents = $(this).html();
+    if ( ($(this).closest('td').siblings('.status').text() === 'OK')  && $(this).text() !== ''){
         $(this).closest('td').siblings('.status').html('changed');
-        
+    } else if ( ($(this).closest('td').siblings('.status').text() === 'changed')  && $(this).text() === ''){
+        $(this).closest('td').siblings('.status').html('OK');
     }
 });
 
@@ -94,10 +93,7 @@ $BTN.click(function () {
         success: function(data) {
             console.log("updateDeviceList OK");
             console.log(JSON.stringify(data));
-            if (data.response === true) 
-                $RESPONSE.text(JSON.stringify(data));
-            else
-                $RESPONSE.text("Problem");
+            $RESPONSE.text(JSON.stringify(data));
         },
         error: function(error, status, errorCode) {
             console.log("Error: "+error+" Status: "+status+" Code: "+errorCode);
@@ -142,7 +138,7 @@ function getServerInfo() {
                 $td.eq(1).html('OK');
                 $td.eq(2).html(data.devices[i].name);
                 $td.eq(2).attr('contenteditable','false');
-                $td.eq(3).html('**********');
+                $td.eq(3).html('');
                 $td.eq(4).html(data.devices[i].login);
                 $td.eq(5).html(data.devices[i].ip);
                 $td.eq(6).html(data.devices[i].ticket);

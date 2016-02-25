@@ -44,18 +44,16 @@ public class AdminParser {
         this.configuration = configuration;
     }
     
-    public boolean parseRequest(JSONArray allItems) {
+    public JSONObject parseRequest(JSONArray allItems) {
         log.debug("Parsing "+allItems.size()+" devices");
-        JSONObject json;
+        JSONObject response = new JSONObject();
         MedusaDevice device;
-        
-        
-        
+        JSONObject json;
         for (Object item: allItems) {
             json = (JSONObject) item;
-            
+            log.debug(json.toJSONString());
             // Ignore cases with empty name or pass
-            if (!json.get(JSON_KEY_NAME).toString().isEmpty() && !json.get(JSON_KEY_PASSWORD).toString().isEmpty()) {
+            if (!json.get(JSON_KEY_NAME).toString().isEmpty()) {
                 device = new MedusaDevice(json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString());
                 log.debug(device.toString());
 
@@ -65,25 +63,42 @@ public class AdminParser {
                         break;
                     case "new":
                         log.debug("new");
-                        DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString());
+                        switch (DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString())) {
+                            case 0:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "duplicated");
+                                break;
+                            case 1:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "added");
+                                break;
+                            default:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "error");
+                                break;       
+                        }
                         break;
                     case "delete":
                         log.debug("delete");
                         DBtools.deleteDevice(configuration.getDatabase(), Integer.parseInt(json.get(JSON_KEY_ID).toString()));
+                        response.put(json.get(JSON_KEY_NAME).toString(), "deleted");
                         break;
                     case "changed":
-                        log.debug("changed");
+                        log.debug("changed");                        
+                        switch(DBtools.changeDevicePassword(configuration.getDatabase(), Integer.parseInt(json.get(JSON_KEY_ID).toString()), json.get(JSON_KEY_PASSWORD).toString())) {
+                            case 0:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "not valid empty pass");
+                                break;
+                            case 1:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "updated");
+                                break;
+                            default:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "error");
+                                break;
+                        }
                         break;
                     default:
                         log.error("Admin Parser: unknown Status "+json.get(JSON_KEY_STATUS).toString());
                 }
             }
-            
         }
-        
-        
-        
-        
-        return true;
+        return response;
     }
 }

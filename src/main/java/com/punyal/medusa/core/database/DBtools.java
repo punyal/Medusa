@@ -248,11 +248,11 @@ public class DBtools {
         }
     }
     
-    public static void addNewDevice(IDataBase database, String name, String password) {
-        addNewDevice(database, name, password, "", "", false, 0, 0, "");
+    public static int addNewDevice(IDataBase database, String name, String password) {
+        return addNewDevice(database, name, password, "", "", false, 0, 0, "");
     }
     
-    public static void addNewDevice(IDataBase database, String name, String password, String address, String ticket, boolean valid, long timeout, long lastlogin, String protocols) {
+    public static int addNewDevice(IDataBase database, String name, String password, String address, String ticket, boolean valid, long timeout, long lastlogin, String protocols) {
         log.debug("Adding New Device");
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
@@ -262,7 +262,7 @@ public class DBtools {
             if (rs.next()) // This item is already on the table
             {
                 log.debug("addNewDevice: "+name+" is already at the database");
-                return;
+                return 0;
             }
             sql = "INSERT INTO "+DEFAULT_DB_TABLE_DEVICES
                     +"(NAME, PASS, ADDRESS, TICKET, VALID, TIMEOUT, LASTLOGIN, PROTOCOLS) VALUES ('"+name+"','"+password+"','"+address+"','"+ticket+"','"+(valid?1:0)+"','"+timeout+"','"+lastlogin+"','"+protocols+"');";
@@ -270,7 +270,9 @@ public class DBtools {
             database.getConnection().createStatement().executeUpdate(sql);
         } catch (SQLException ex) {
             log.error("Adding Devices table: "+ex.getMessage());
+            return -1;
         }
+        return 1;
     }
     
     public static void deleteDevice(IDataBase database, int id) {
@@ -282,6 +284,22 @@ public class DBtools {
         } catch (SQLException ex) {
             log.error("delete device: "+ex.getMessage());
         }
+    }
+    
+    public static int changeDevicePassword(IDataBase database, int id, String newPass) {
+        log.debug("Changing Password for Device");
+        if (newPass.isEmpty()) return 0;
+        try {
+            String sql = "UPDATE "+
+                    DEFAULT_DB_TABLE_DEVICES+" SET PASS='"+newPass+"' WHERE ID='"+id+"';";
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException ex) {
+            log.error("Changing Password: "+ex.getMessage());
+            return -1;
+        }
+        log.debug("RETURNING 1");
+        return 1;
     }
     
     public static List<MedusaDevice> getDevicesList(IDataBase database) {
