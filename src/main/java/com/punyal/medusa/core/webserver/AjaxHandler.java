@@ -28,12 +28,10 @@ import com.punyal.medusa.core.MedusaDevice;
 import com.punyal.medusa.core.configuration.Configuration;
 import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.logger.MedusaLogger;
+import com.punyal.medusa.utils.DateUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -66,7 +64,7 @@ public class AjaxHandler extends AbstractHandler {
         switch (target.substring(1)) { // remove the initial "/"
             case "getServerInfo":
                 log.debug("AjaxHandler - getServerInfo");
-                json.put(JSON_KEY_TIME, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+                json.put(JSON_KEY_TIME, DateUtils.long2DateSeconds(System.currentTimeMillis()));
                 json.put(JSON_KEY_PUBLIC_IP, configuration.getPublicIP());
                 json.put(JSON_KEY_LOCAL_IP, configuration.getLocalIP());
                 //json.put(KEY_VERSION, UNIVERSE_VERSION+"."+UNIVERSE_SUBVERSION);
@@ -87,13 +85,12 @@ public class AjaxHandler extends AbstractHandler {
                     
                     jsonDevice.put(JSON_KEY_ID, device.getId());
                     jsonDevice.put(JSON_KEY_NAME, device.getName());
-                    jsonDevice.put(JSON_KEY_LAST_LOGIN, device.getLastLogin());
-                    jsonDevice.put(JSON_KEY_IP, device.getIP());
-                    jsonDevice.put(JSON_KEY_TICKET, device.getTicket());
-                    jsonDevice.put(JSON_KEY_VALID, device.isValid());
-                    jsonDevice.put(JSON_KEY_TIMEOUT, device.getTimeout());
-                    jsonDevice.put(JSON_KEY_LAST_LOGIN, device.getLastLogin());
-                    jsonDevice.put(JSON_KEY_PROTOCOLS, device.getProtocols());
+                    jsonDevice.put(JSON_KEY_IP, (device.getIP().length()>1)?device.getIP():JSON_KEY_UNKNOWN);
+                    jsonDevice.put(JSON_KEY_TICKET, (device.getTicket().length()>1)?device.getTicket():JSON_KEY_UNKNOWN);
+                    jsonDevice.put(JSON_KEY_VALID, device.isValid()?JSON_KEY_TRUE:JSON_KEY_FALSE);
+                    jsonDevice.put(JSON_KEY_TIMEOUT, DateUtils.long2DateSeconds(device.getTimeout()));
+                    jsonDevice.put(JSON_KEY_LAST_LOGIN, DateUtils.long2DateSeconds(device.getLastLogin()));
+                    jsonDevice.put(JSON_KEY_PROTOCOLS, (device.getProtocols().length()>1)?device.getProtocols():JSON_KEY_UNKNOWN);
                     
                     jsonDevices.add(jsonDevice);
                 }

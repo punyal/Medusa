@@ -25,6 +25,7 @@ package com.punyal.medusa.core.protocols.coap;
 
 import com.punyal.medusa.core.configuration.Configuration;
 import com.punyal.medusa.core.protocols.IProtocol;
+import com.punyal.medusa.logger.MedusaLogger;
 import org.eclipse.californium.core.CoapServer;
 
 /**
@@ -32,6 +33,7 @@ import org.eclipse.californium.core.CoapServer;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class CoAP implements IProtocol {
+    private static final MedusaLogger log = new MedusaLogger();
     private final Configuration configuration;
     private final CoapServer coapServer;
     
@@ -43,11 +45,13 @@ public class CoAP implements IProtocol {
 
     @Override
     public void start() {
+        log.debug("Starting CoAP Server at port: "+configuration.getConfigurationCoapServer().getPort());
         coapServer.start();
     }
 
     @Override
     public void stop() {
+        log.debug("Stoping CoAP Server");
         coapServer.stop();
     }
 

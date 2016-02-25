@@ -23,10 +23,8 @@
  */
 package com.punyal.medusa.core;
 
+import com.punyal.medusa.utils.DateUtils;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -61,18 +59,9 @@ public class MedusaDevice {
         this.password = password;
         this.address = address;
         this.ticket = ticket;        
-        this.valid = valid;        
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        try {
-            this.lastLogin = ((format).parse(lastLogin)).getTime();
-        } catch (ParseException ex) {
-            this.lastLogin = 0;
-        }
-        try {
-            this.timeout = ((format).parse(timeout)).getTime();
-        } catch (ParseException ex) {
-            this.timeout = 0;
-        }
+        this.valid = valid;
+        this.lastLogin = DateUtils.date2Long(lastLogin);
+        this.timeout = DateUtils.date2Long(timeout);
         this.protocols = protocols;
     }
     
@@ -152,15 +141,14 @@ public class MedusaDevice {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         // Humman readable configuration
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sb.append("Device id: ").append(id).append("\n");
         sb.append("\tName: ").append(name).append("\n");
         sb.append("\tPassword: ").append(password).append("\n");
         sb.append("\tIP: ").append(address).append("\n");
         sb.append("\tTicket: ").append(ticket).append("\n");
         sb.append("\tValid: ").append(valid).append("\n");
-        sb.append("\tTimeout:    ").append(format.format(timeout)).append("\n");
-        sb.append("\tLast Login: ").append(format.format(lastLogin)).append("\n");
+        sb.append("\tTimeout:    ").append(DateUtils.long2DateMillis(timeout)).append("\n");
+        sb.append("\tLast Login: ").append(DateUtils.long2DateMillis(lastLogin)).append("\n");
         sb.append("\tProtocols: ").append(protocols).append("\n");
         return sb.toString();
     }

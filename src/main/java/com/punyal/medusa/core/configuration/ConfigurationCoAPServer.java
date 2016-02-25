@@ -23,7 +23,7 @@
  */
 package com.punyal.medusa.core.configuration;
 
-import static com.punyal.medusa.constants.Defaults.*;
+import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
 
 /**
  *
@@ -35,7 +35,7 @@ public class ConfigurationCoAPServer {
     public ConfigurationCoAPServer(int coapPort) {
         /* Load default parameters */
         port = (coapPort == 0)?
-                DEFAULT_WEB_PORT:
+                DEFAULT_COAP_PORT:
                 coapPort;
     }
     
@@ -44,3 +44,4 @@ public class ConfigurationCoAPServer {
     }
     
 }
+

@@ -25,8 +25,7 @@ package com.punyal.medusa.logger;
 
 import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.logger.MedusaLogger.GrainLevel.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.punyal.medusa.utils.DateUtils;
 
 /**
  *
@@ -40,10 +39,8 @@ public class MedusaLogger {
     }
     
     private void print(GrainLevel level, String toPrint) {
-        if (levelFilter.value <= level.value) {
-            String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(System.currentTimeMillis()));
-                System.out.println(time+" ["+level+"] "+toPrint);
-        }
+        if (levelFilter.value <= level.value)
+            System.out.println(DateUtils.long2DateMillis(System.currentTimeMillis())+" ["+level+"] "+toPrint);
         
     }
     

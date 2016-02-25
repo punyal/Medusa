@@ -27,16 +27,21 @@ THE SOFTWARE.
         <title>Medusa Server</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+
         <!-- Medusa CSS Core -->
         <link rel='stylesheet prefetch' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css'>
         <link rel='stylesheet prefetch' href='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
         <link rel="stylesheet" href="css/medusa.css">
-        
+        <link rel="icon" type="image/png" href="images/medusa.png">
+
     </head>
     <body>
         <div class="container">
-            <h1>Medusa Server</h1>
+            <div class="title">
+                <div><img src="images/medusa.png" class="logo"></div>
+                <div class="titletext">Medusa Server</div>
+                <div class="subtitle">Authentication & Authorization Server</div>
+            </div>
             <p>Device Manager <strong>be careful, changes affect other users</strong>.</p>
             <p>Server Info: <a id="serverInfo"></a></p>
             <ul>
@@ -44,7 +49,7 @@ THE SOFTWARE.
                 <li>Public IPs: <a id="serverPublicIPs"></a></li>
                 <li>Local IPs: <a id="serverLocalIPs"></a></li>
             </ul>
-            
+
             <div id="table" class="table-editable">
                 <span class="table-add glyphicon glyphicon-plus"></span>
                 <table class="table">
@@ -55,6 +60,7 @@ THE SOFTWARE.
                         <th>Password</th>
                         <th>Login</th>
                         <th>IP</th>
+                        <th>Ticket</th>
                         <th>Protocol</th>
                         <th>Valid</th>
                         <th>Timeout</th>
@@ -68,6 +74,7 @@ THE SOFTWARE.
                         <td class="pass" contenteditable="true"></td>
                         <td class="login"></td>
                         <td class="ip"></td>
+                        <td class="ticket"></td>
                         <td class="protocol"></td>
                         <td class="valid"></td>
                         <td class="timeout"></td>
@@ -75,25 +82,25 @@ THE SOFTWARE.
                     </tr>
                 </table>
             </div>
-            
+
             <button id="export-btn" class="btn btn-primary">Save All Changes</button>
             <p><a id="response"></a></p>
             <p id="auto-reload"></p>
-        
-            
+
+
             <footer style="text-align: center;">
                 <small >© 2016, Pablo Puñal Pereira - <a href="http://www.punyal.com" target="_blank">www.punyal.com</a></small>
             </footer>
         </div>
-        
-        
-        
+
+
+
         <!-- Medusa JS Core -->
         <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
         <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
         <script src='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js'></script>
         <script src='http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js'></script>
         <script src="js/medusa.js"></script>
-        
+
     </body>
 </html>

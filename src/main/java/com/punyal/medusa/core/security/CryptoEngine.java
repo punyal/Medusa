@@ -24,14 +24,20 @@
 package com.punyal.medusa.core.security;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import com.punyal.medusa.core.database.DBtools;
+import com.punyal.medusa.core.database.IDataBase;
+import com.punyal.medusa.logger.MedusaLogger;
+import com.punyal.medusa.utils.DateUtils;
 import java.net.InetAddress;
 import java.security.SecureRandom;
+import java.util.Date;
 
 /**
  *
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class CryptoEngine {
+    private static final MedusaLogger log = new MedusaLogger();
     private final SecureRandom randomizer;
     
     public CryptoEngine() {
@@ -39,11 +45,11 @@ public class CryptoEngine {
         //this.db = db;
     }
     
-    public synchronized Authenticator getNewAuthenticator(InetAddress address) {
-        Authenticator authenticator = new Authenticator(generateNewAuthenticatorValue(), DEFAULT_AUTHENTICATOR_TIMEOUT);
-        //Device device = new Device("null","null");
-        //device.setAuthenticator(address, authenticator);
-        //db.addDeviceInfo(device);
+    public synchronized Authenticator getNewAuthenticator(IDataBase database, InetAddress address) {
+        long timeout = System.currentTimeMillis()+DEFAULT_AUTHENTICATOR_TIMEOUT; // Actualtime + timeout in ms
+        Authenticator authenticator = new Authenticator(generateNewAuthenticatorValue(), timeout);
+        log.info("Created ticket ["+authenticator.getValue()+"] valid till "+DateUtils.long2DateMillis(timeout));
+        DBtools.addNewAuthenticator(database, authenticator.getValue(), address.getHostAddress(),authenticator.getTimeout());
         return authenticator;
     }
     

@@ -145,9 +145,10 @@ function getServerInfo() {
                 $td.eq(3).html('**********');
                 $td.eq(4).html(data.devices[i].login);
                 $td.eq(5).html(data.devices[i].ip);
-                $td.eq(6).html(data.devices[i].protocols);
-                $td.eq(7).html(data.devices[i].valid);
-                $td.eq(8).html(data.devices[i].timeout);
+                $td.eq(6).html(data.devices[i].ticket);
+                $td.eq(7).html(data.devices[i].protocols);
+                $td.eq(8).html(data.devices[i].valid);
+                $td.eq(9).html(data.devices[i].timeout);
                 
                 $TABLE.find('table').append($clone);
                 $TABLE.find('id').replaceWith(":)");

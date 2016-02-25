@@ -26,11 +26,13 @@ package com.punyal.medusa.core.protocols.coap;
 import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.configuration.Configuration;
+import com.punyal.medusa.core.database.DBtools;
 import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
 import com.punyal.medusa.core.security.Authenticator;
 import com.punyal.medusa.logger.MedusaLogger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import org.eclipse.californium.core.CoapResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 import static org.eclipse.californium.core.coap.MediaTypeRegistry.*;
@@ -55,15 +57,10 @@ public class AuthenticationResource extends CoapResource {
     public void handleGET(CoapExchange exchange) {
         JSONObject json = new JSONObject();
         json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
-        Authenticator authenticator = null;
-        try {
-            authenticator = configuration.getCryptoEngine().getNewAuthenticator(InetAddress.getLocalHost());
-        } catch (UnknownHostException ex) {
-            log.error("Unknown Host: "+ ex.getMessage());
-        }
+        Authenticator authenticator = configuration.getCryptoEngine().getNewAuthenticator(configuration.getDatabase(), exchange.getSourceAddress());
         
         json.put(JSON_KEY_AUTHENTICATOR, authenticator.getValue());
-        json.put(JSON_KEY_TIMEOUT, authenticator.getTimeout());
+        json.put(JSON_KEY_TIMEOUT, authenticator.getTimeout()-System.currentTimeMillis());
         
         exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
     }
@@ -72,6 +69,10 @@ public class AuthenticationResource extends CoapResource {
     public void handlePOST(CoapExchange exchange) {
         JSONObject json = new JSONObject();
         json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
+        
+        DBtools.findAuthenticatorsByAddress(configuration.getDatabase(), exchange.getSourceAddress().getHostAddress());
+        
+        
         exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
     }
 }
