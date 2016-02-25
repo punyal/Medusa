@@ -254,6 +254,7 @@ public class DBtools {
     
     public static int addNewDevice(IDataBase database, String name, String password, String address, String ticket, boolean valid, long timeout, long lastlogin, String protocols) {
         log.debug("Adding New Device");
+        if (password.isEmpty()) return 1;
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
                     +" WHERE NAME = '"+name+"';";
@@ -262,7 +263,7 @@ public class DBtools {
             if (rs.next()) // This item is already on the table
             {
                 log.debug("addNewDevice: "+name+" is already at the database");
-                return 0;
+                return 2;
             }
             sql = "INSERT INTO "+DEFAULT_DB_TABLE_DEVICES
                     +"(NAME, PASS, ADDRESS, TICKET, VALID, TIMEOUT, LASTLOGIN, PROTOCOLS) VALUES ('"+name+"','"+password+"','"+address+"','"+ticket+"','"+(valid?1:0)+"','"+timeout+"','"+lastlogin+"','"+protocols+"');";
@@ -272,7 +273,7 @@ public class DBtools {
             log.error("Adding Devices table: "+ex.getMessage());
             return -1;
         }
-        return 1;
+        return 0;
     }
     
     public static void deleteDevice(IDataBase database, int id) {
@@ -288,7 +289,7 @@ public class DBtools {
     
     public static int changeDevicePassword(IDataBase database, int id, String newPass) {
         log.debug("Changing Password for Device");
-        if (newPass.isEmpty()) return 0;
+        if (newPass.isEmpty()) return 1;
         try {
             String sql = "UPDATE "+
                     DEFAULT_DB_TABLE_DEVICES+" SET PASS='"+newPass+"' WHERE ID='"+id+"';";
@@ -298,8 +299,7 @@ public class DBtools {
             log.error("Changing Password: "+ex.getMessage());
             return -1;
         }
-        log.debug("RETURNING 1");
-        return 1;
+        return 0;
     }
     
     public static List<MedusaDevice> getDevicesList(IDataBase database) {

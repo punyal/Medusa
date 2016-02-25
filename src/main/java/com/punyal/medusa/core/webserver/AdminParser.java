@@ -52,7 +52,7 @@ public class AdminParser {
         for (Object item: allItems) {
             json = (JSONObject) item;
             log.debug(json.toJSONString());
-            // Ignore cases with empty name or pass
+            // Ignore cases with empty name
             if (!json.get(JSON_KEY_NAME).toString().isEmpty()) {
                 device = new MedusaDevice(json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString());
                 log.debug(device.toString());
@@ -65,10 +65,13 @@ public class AdminParser {
                         log.debug("new");
                         switch (DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString())) {
                             case 0:
-                                response.put(json.get(JSON_KEY_NAME).toString(), "duplicated");
+                                response.put(json.get(JSON_KEY_NAME).toString(), "added");
                                 break;
                             case 1:
-                                response.put(json.get(JSON_KEY_NAME).toString(), "added");
+                                response.put(json.get(JSON_KEY_NAME).toString(), "empty pass");
+                                break;
+                            case 2:
+                                response.put(json.get(JSON_KEY_NAME).toString(), "dupplicated");
                                 break;
                             default:
                                 response.put(json.get(JSON_KEY_NAME).toString(), "error");
@@ -81,13 +84,13 @@ public class AdminParser {
                         response.put(json.get(JSON_KEY_NAME).toString(), "deleted");
                         break;
                     case "changed":
-                        log.debug("changed");                        
+                        log.debug("changed");
                         switch(DBtools.changeDevicePassword(configuration.getDatabase(), Integer.parseInt(json.get(JSON_KEY_ID).toString()), json.get(JSON_KEY_PASSWORD).toString())) {
                             case 0:
-                                response.put(json.get(JSON_KEY_NAME).toString(), "not valid empty pass");
+                                response.put(json.get(JSON_KEY_NAME).toString(), "updated");
                                 break;
                             case 1:
-                                response.put(json.get(JSON_KEY_NAME).toString(), "updated");
+                                response.put(json.get(JSON_KEY_NAME).toString(), "empty pass");
                                 break;
                             default:
                                 response.put(json.get(JSON_KEY_NAME).toString(), "error");
