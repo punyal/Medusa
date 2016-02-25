@@ -178,7 +178,7 @@ public class DBtools {
             }
             removeAuthenticators(database, toRemove);
         } catch (SQLException ex) {
-            log.error("Adding Devices table: "+ex.getMessage());
+            log.error("Updating Authenticators List: "+ex.getMessage());
         }
     }
     
@@ -301,14 +301,51 @@ public class DBtools {
         return 0;
     }
     
+    private static void updateDevicesList(IDataBase database) {
+        log.debug("Updating Devices List");
+        try {
+            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
+                    +" WHERE "+KEY_DEVICES_TIMEOUT+" < "+System.currentTimeMillis()+";";
+            log.debug(sql);
+            ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
+            StringBuilder toRemove = new StringBuilder();
+            
+            //List<Integer> toRemove = new ArrayList<>();
+            while(rs.next()) {
+                toRemove.append(",").append(rs.getInt(KEY_DEVICES_ID));
+            }
+            if (!toRemove.toString().isEmpty()) {
+                sql = "UPDATE "+DEFAULT_DB_TABLE_DEVICES+" SET VALID=0 WHERE "
+                        +KEY_DEVICES_ID+" IN ("+toRemove.toString().substring(1)+");";
+                log.debug(sql);
+                database.getConnection().createStatement().executeUpdate(sql);
+            } else {
+                log.debug("Nothing to update");
+            }
+            
+        } catch (SQLException ex) {
+            log.error("Updating Devices List: "+ex.getMessage());
+        }
+    }
+    
     public static MedusaDevice getDeviceByName(IDataBase database, String name) {
+        updateDevicesList(database);
         log.debug("Get device by Name");
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE NAME = '"+name+"';";
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             if(rs.next())
-                return new MedusaDevice(rs.getInt(KEY_DEVICES_ID), rs.getString(KEY_DEVICES_NAME),rs.getString(KEY_DEVICES_PASSWORD));
+                return new MedusaDevice(
+                        rs.getInt(KEY_DEVICES_ID),
+                        rs.getString(KEY_DEVICES_NAME),
+                        rs.getString(KEY_DEVICES_PASSWORD),
+                        rs.getString(KEY_DEVICES_ADDRESS),
+                        rs.getString(KEY_DEVICES_TICKET),
+                        rs.getBoolean(KEY_DEVICES_VALID),
+                        rs.getLong(KEY_DEVICES_TIMEOUT),
+                        rs.getLong(KEY_DEVICES_LASTLOGIN),
+                        rs.getString(KEY_DEVICES_PROTOCOLS));
         } catch (SQLException ex) {
             log.error("getDevicesList: "+ex.getMessage());
         }
@@ -316,6 +353,7 @@ public class DBtools {
     }
     
     public static List<MedusaDevice> getDevicesList(IDataBase database) {
+        updateDevicesList(database);
         log.debug("Get devices List");
         List<MedusaDevice> list = new ArrayList<>();
         try {
@@ -339,4 +377,14 @@ public class DBtools {
         return list;
     }
     
+    public static void updateDeviceTicket(IDataBase database, MedusaDevice device) {
+        log.debug("Updating Device Ticket");
+        try {
+            String sql = "UPDATE "+DEFAULT_DB_TABLE_DEVICES+" SET "+KEY_DEVICES_ADDRESS+"='"+device.getAddress()+"', "+KEY_DEVICES_LASTLOGIN+"="+device.getLastLogin()+", "+KEY_DEVICES_TIMEOUT+"="+device.getTimeout()+", "+KEY_DEVICES_TICKET+"='"+device.getTicket()+"', "+KEY_DEVICES_PROTOCOLS+"='"+device.getProtocols()+"', "+KEY_DEVICES_VALID+"=1  WHERE ID='"+device.getId()+"';";
+            log.debug(sql);
+            database.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException ex) {
+            log.error("Updating Device Ticket: "+ex.getMessage());
+        }
+    }
 }

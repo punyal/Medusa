@@ -54,6 +54,7 @@ public class Configuration {
     private String errorMessage;
     private String publicIP;
     private String localIP;
+    private String secretKey;
     
     public Configuration(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort) {
         /* Public IP */
@@ -121,6 +122,10 @@ public class Configuration {
     
     public IDataBase getDatabase() {
         return database;
+    }
+    
+    public String getSecretKey() {
+        return secretKey;
     }
     
     public String getPublicIP() {

@@ -79,26 +79,28 @@ public class CryptoEngine {
         return sb.toString();
     }
     
-    public synchronized JSONObject getTicket(IDataBase database, InetAddress address, String name, String password) {
+    public synchronized JSONObject getTicket(IDataBase database, String protocol, String secretKey, InetAddress address, String name, String encryptedPassword) {
         JSONObject json = new JSONObject();
         // Check if there are name and password
-        if (name != null && password != null) {
-            if (!name.isEmpty() && !password.isEmpty()) {
+        if (name != null && encryptedPassword != null) {
+            if (!name.isEmpty() && !encryptedPassword.isEmpty()) {
                 // Check if there is some valid authenticator for that IP
                 List<String> authenticators = DBtools.findAuthenticatorsByAddress(database, address.getHostAddress());
                 if (!authenticators.isEmpty()) {
                     // find user on the database
                     MedusaDevice device = DBtools.getDeviceByName(database, name);
+                    log.debug(device.toString());
                     if (device != null) {
+                        device.setProtocols(protocol);
                         // Check if the encrypted pass matches
-                        
-                        /*
-                        if (password is correct)
-                            generate ticket;
-                        else error;
-                        */
-                        
-                        
+                        if (checkPassword(authenticators, secretKey, device.getPassword(), encryptedPassword)) {
+                            generateTicket(database, address, device);
+                            json.put(JSON_KEY_TICKET, device.getTicket());
+                            json.put(JSON_KEY_TIMEOUT, device.getTimeout());
+                        } else { // Wrong password
+                            log.debug("Wrong password");
+                            json.put(JSON_KEY_ERROR, "Wrong password");
+                        }
                     } else { // Wrong name
                         log.debug("Wrong name");
                         json.put(JSON_KEY_ERROR, "Wrong name");
@@ -118,4 +120,30 @@ public class CryptoEngine {
         return json;
     }
     
+    private boolean checkPassword(List<String> authenticators, String secretKey, String originalPassword, String encryptedPassword) {
+        //return authenticators.stream().anyMatch((authenticator) -> (encryptedPassword.equals(encrypt(secretKey, authenticator, originalPassword)))); // TODO:
+        return true;
+    }
+    
+    private String encrypt(String secretKey, String authenticator, String password) {
+        // TODO
+        return "";
+    }
+    
+    private void generateTicket(IDataBase database, InetAddress address, MedusaDevice device) {
+        // Check if the previous ticket is still valid
+        if (device.isValid()) {
+            log.debug("Previuos Ticket is still valid");
+            device.setLastLogin(System.currentTimeMillis());
+            device.setAddress(address);
+            DBtools.updateDeviceTicket(database, device);
+            return;
+        }
+        String ticket = "1234567"; // TODO: generate this
+        device.setTicket(ticket);
+        device.setAddress(address);
+        device.setLastLogin(System.currentTimeMillis());
+        device.setTimeout(System.currentTimeMillis()+120000);
+        DBtools.updateDeviceTicket(database, device);
+    }
 }

@@ -24,6 +24,7 @@
 package com.punyal.medusa.core;
 
 import com.punyal.medusa.utils.DateUtils;
+import java.net.InetAddress;
 
 /**
  *
@@ -96,6 +97,10 @@ public class MedusaDevice {
         this.id = id;
     }
     
+    public void setAddress(InetAddress address) {
+        this.address = address.getHostAddress();
+    }
+    
     public void setValid() {
         valid = true;
     }
@@ -104,12 +109,20 @@ public class MedusaDevice {
         valid = false;
     }
     
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
+    
     public void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
     }
     
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+    
+    public void setProtocols(String protocols) {
+        this.protocols = protocols;
     }
     
     public int getId() {
@@ -124,7 +137,7 @@ public class MedusaDevice {
         return password;
     }
     
-    public String getIP() {
+    public String getAddress() {
         return address;
     }
     

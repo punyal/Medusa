@@ -28,6 +28,7 @@ package com.punyal.medusa.core.protocols.coap;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class DefaultsCoAP {
+    public static final String DEFAULT_COAP = "CoAP";
     public static final int DEFAULT_COAP_PORT = 5683;
     
     /* Names */

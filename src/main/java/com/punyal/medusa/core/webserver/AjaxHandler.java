@@ -79,7 +79,7 @@ public class AjaxHandler extends AbstractHandler {
                     jsonDevice = new JSONObject();
                     jsonDevice.put(JSON_KEY_ID, device.getId());
                     jsonDevice.put(JSON_KEY_NAME, device.getName());
-                    jsonDevice.put(JSON_KEY_IP, (device.getIP().length()>1)?device.getIP():JSON_KEY_UNKNOWN);
+                    jsonDevice.put(JSON_KEY_IP, (device.getAddress().length()>1)?device.getAddress():JSON_KEY_UNKNOWN);
                     jsonDevice.put(JSON_KEY_TICKET, (device.getTicket().length()>1)?device.getTicket():JSON_KEY_UNKNOWN);
                     jsonDevice.put(JSON_KEY_VALID, device.isValid()?JSON_KEY_TRUE:JSON_KEY_FALSE);
                     jsonDevice.put(JSON_KEY_TIMEOUT, DateUtils.long2DateSeconds(device.getTimeout()));
