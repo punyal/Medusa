@@ -76,7 +76,6 @@ public class Configuration {
                 while (ee.hasMoreElements())
                 {
                     InetAddress i = (InetAddress) ee.nextElement();
-                    System.out.println(i.getHostAddress());
                     localIP = localIP + " [" + i.getHostAddress()+"] ";
                 }
             }
@@ -116,6 +115,7 @@ public class Configuration {
         sb.append(" - Port:").append(confWebServer.getPort()).append("\n");
         sb.append(" - FilesPath:").append(confWebServer.getFilesPath()).append("\n");
         sb.append("[CoAP Services]\n");
+        sb.append(" - Port:").append(confCoapServer.getPort()).append("\n");
         return sb.toString();
     }
     

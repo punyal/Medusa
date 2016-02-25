@@ -24,7 +24,6 @@
 package com.punyal.medusa.core;
 
 import com.punyal.medusa.utils.DateUtils;
-import java.text.ParseException;
 
 /**
  *
@@ -63,6 +62,18 @@ public class MedusaDevice {
         this.lastLogin = DateUtils.date2Long(lastLogin);
         this.timeout = DateUtils.date2Long(timeout);
         this.protocols = protocols;
+    }
+    
+    public MedusaDevice(int id, String name, String password) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.address = "";
+        this.ticket = "";
+        this.valid = false;
+        this.lastLogin = 0;
+        this.timeout = 0;
+        this.protocols = "";
     }
     
     public MedusaDevice(String name, String password) {

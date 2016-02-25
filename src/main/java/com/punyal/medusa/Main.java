@@ -27,6 +27,7 @@ import com.punyal.medusa.core.MedusaCLI;
 import com.punyal.medusa.core.database.H2conf;
 import com.punyal.medusa.core.database.MySQLconf;
 import com.punyal.medusa.logger.MedusaLogger;
+import static com.punyal.medusa.logger.MedusaLogger.GrainLevel.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
@@ -45,8 +46,6 @@ public class Main {
         int coapPort = 0;
         int webPort = 0;
         
-        
-        
         try {
             CommandLine cmd = cli.getCLI(args);
             
@@ -54,6 +53,29 @@ public class Main {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("Medusa", cli.getOptions());
                 System.exit(0);
+            }
+            
+            if (cmd.hasOption("log")) {
+                switch(cmd.getOptionValue("log").toLowerCase()) {
+                    case "debug":
+                        MedusaLogger.levelFilter = DEB;
+                        break;
+                    case "info":
+                        MedusaLogger.levelFilter = INF;
+                        break;
+                    case "WAR":
+                        MedusaLogger.levelFilter = WAR;
+                        break;
+                    case "ERROR":
+                        MedusaLogger.levelFilter = ERR;
+                        break;
+                    case "CRITICAL":
+                        MedusaLogger.levelFilter = CRI;
+                        break;
+                    default:
+                        MedusaLogger.levelFilter = WAR;
+                        break;    
+                }
             }
             
             if (cmd.hasOption("MySQL")) {

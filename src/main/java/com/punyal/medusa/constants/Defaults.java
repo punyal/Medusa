@@ -67,8 +67,24 @@ public class Defaults {
             DEFAULT_DB_TABLE_AUTHENTICATORS+" ( ID int NOT NULL AUTO_INCREMENT, IP varchar(32) NOT NULL, AUTHENTICATOR varchar(32), TIMEOUT BIGINT, PRIMARY KEY (ID));";
     public static final String DEFAULT_DB_TABLE_DEVICES = "DEVICES";
     public static final String DEFAULT_DB_TABLE_DEVICES_INIT = "CREATE TABLE "+
-            DEFAULT_DB_TABLE_DEVICES+"( ID int NOT NULL AUTO_INCREMENT, NAME varchar(255) NOT NULL, PASS varchar(255), ADDRESS varchar(20), TICKET varchar(20), VALID boolean, TIMEOUT BIGINT, LASTLOGIN BIGINT, PROTOCOLS varchar(255), PRIMARY KEY (ID));";
-    
+            DEFAULT_DB_TABLE_DEVICES+"( "+Defaults.KEY_DEVICES_ADDRESS+" int NOT NULL AUTO_INCREMENT, "+
+            Defaults.KEY_DEVICES_NAME+" varchar(255) NOT NULL, "+
+            Defaults.KEY_DEVICES_PASSWORD+" varchar(255), "+
+            Defaults.KEY_DEVICES_ADDRESS+" varchar(20), "+
+            Defaults.KEY_DEVICES_PASSWORD+" varchar(20), "+
+            Defaults.KEY_DEVICES_VALID+" boolean, "+
+            Defaults.KEY_DEVICES_TIMEOUT+" BIGINT, "+
+            Defaults.KEY_DEVICES_LASTLOGIN+" BIGINT, "+
+            Defaults.KEY_DEVICES_PROTOCOLS+" varchar(255), PRIMARY KEY ("+Defaults.KEY_DEVICES_ID+"));";
+    public static final String KEY_DEVICES_ID = "ID";
+    public static final String KEY_DEVICES_NAME = "NAME";
+    public static final String KEY_DEVICES_PASSWORD = "PASS";
+    public static final String KEY_DEVICES_ADDRESS = "ADDRESS";
+    public static final String KEY_DEVICES_TICKET = "TICKET";
+    public static final String KEY_DEVICES_VALID = "VALID";
+    public static final String KEY_DEVICES_TIMEOUT = "TIMEOUT";
+    public static final String KEY_DEVICES_LASTLOGIN = "LASTLOGIN";
+    public static final String KEY_DEVICES_PROTOCOLS = "PROTOCOLS";
     
     /* Authenticator */
     public static final long DEFAULT_AUTHENTICATOR_TIMEOUT = 15000;// miliseconds

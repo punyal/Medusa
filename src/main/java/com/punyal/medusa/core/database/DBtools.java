@@ -30,7 +30,6 @@ import com.punyal.medusa.utils.DateUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -166,7 +165,7 @@ public class DBtools {
         }
     }
     
-    public static void updateAuthenticatorsList(IDataBase database) {
+    private static void updateAuthenticatorsList(IDataBase database) {
         log.debug("Updating Authenticators List");
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_AUTHENTICATORS
@@ -302,6 +301,20 @@ public class DBtools {
         return 0;
     }
     
+    public static MedusaDevice getDeviceByName(IDataBase database, String name) {
+        log.debug("Get device by Name");
+        try {
+            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE NAME = '"+name+"';";
+            log.debug(sql);
+            ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
+            if(rs.next())
+                return new MedusaDevice(rs.getInt(KEY_DEVICES_ID), rs.getString(KEY_DEVICES_NAME),rs.getString(KEY_DEVICES_PASSWORD));
+        } catch (SQLException ex) {
+            log.error("getDevicesList: "+ex.getMessage());
+        }
+        return null;
+    }
+    
     public static List<MedusaDevice> getDevicesList(IDataBase database) {
         log.debug("Get devices List");
         List<MedusaDevice> list = new ArrayList<>();
@@ -310,7 +323,16 @@ public class DBtools {
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             while(rs.next())
-                list.add(new MedusaDevice(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getBoolean(6), rs.getLong(7), rs.getLong(8), rs.getString(9)));
+                list.add(new MedusaDevice(
+                        rs.getInt(KEY_DEVICES_ID),
+                        rs.getString(KEY_DEVICES_NAME),
+                        rs.getString(KEY_DEVICES_PASSWORD),
+                        rs.getString(KEY_DEVICES_ADDRESS),
+                        rs.getString(KEY_DEVICES_TICKET),
+                        rs.getBoolean(KEY_DEVICES_VALID),
+                        rs.getLong(KEY_DEVICES_TIMEOUT),
+                        rs.getLong(KEY_DEVICES_LASTLOGIN),
+                        rs.getString(KEY_DEVICES_PROTOCOLS)));
         } catch (SQLException ex) {
             log.error("getDevicesList: "+ex.getMessage());
         }

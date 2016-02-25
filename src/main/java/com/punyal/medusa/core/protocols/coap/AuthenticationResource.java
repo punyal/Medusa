@@ -26,13 +26,10 @@ package com.punyal.medusa.core.protocols.coap;
 import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.configuration.Configuration;
-import com.punyal.medusa.core.database.DBtools;
 import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
 import com.punyal.medusa.core.security.Authenticator;
 import com.punyal.medusa.logger.MedusaLogger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
+import com.punyal.medusa.utils.JsonUtils;
 import org.eclipse.californium.core.CoapResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 import static org.eclipse.californium.core.coap.MediaTypeRegistry.*;
@@ -55,24 +52,40 @@ public class AuthenticationResource extends CoapResource {
     
     @Override
     public void handleGET(CoapExchange exchange) {
+        log.debug("CoAP Server - Authentication - GET");
         JSONObject json = new JSONObject();
         json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
         Authenticator authenticator = configuration.getCryptoEngine().getNewAuthenticator(configuration.getDatabase(), exchange.getSourceAddress());
-        
         json.put(JSON_KEY_AUTHENTICATOR, authenticator.getValue());
         json.put(JSON_KEY_TIMEOUT, authenticator.getTimeout()-System.currentTimeMillis());
-        
         exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
     }
     
     @Override
     public void handlePOST(CoapExchange exchange) {
-        JSONObject json = new JSONObject();
-        json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
+        log.debug("CoAP Server - Authentication - POST");
+        /* Check Incoming data process */
+        // Check if it's JSON
+        if (exchange.getRequestOptions().getContentFormat() == APPLICATION_JSON) {
+            JSONObject json = new JSONObject();
+            // If there is payload
+            if (!exchange.getRequestText().isEmpty()) {
+                JSONObject jsonRequest = JsonUtils.parseString(exchange.getRequestText());
+                // Check if is parsable
+                if (jsonRequest != null) {
+                    json = configuration.getCryptoEngine().getTicket(configuration.getDatabase(), exchange.getSourceAddress(), jsonRequest.get(JSON_KEY_NAME).toString(), jsonRequest.get(JSON_KEY_PASSWORD).toString());
+                } else { // No payload
+                    json.put(JSON_KEY_ERROR, "No parseable JSON");
+                }
+            } else { // No payload
+                json.put(JSON_KEY_ERROR, "No payload");
+            }
+            log.debug("Response: "+json.toJSONString());
+            exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
+        } else { // No JSON
+            log.debug("No JSON Content Format");
+            exchange.respond(UNSUPPORTED_CONTENT_FORMAT);
+        }
         
-        DBtools.findAuthenticatorsByAddress(configuration.getDatabase(), exchange.getSourceAddress().getHostAddress());
-        
-        
-        exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
     }
 }

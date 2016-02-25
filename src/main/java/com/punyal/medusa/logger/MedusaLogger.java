@@ -23,7 +23,6 @@
  */
 package com.punyal.medusa.logger;
 
-import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.logger.MedusaLogger.GrainLevel.*;
 import com.punyal.medusa.utils.DateUtils;
 
@@ -32,10 +31,9 @@ import com.punyal.medusa.utils.DateUtils;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class MedusaLogger {
-    private final GrainLevel levelFilter;
+    public static GrainLevel levelFilter = WAR;
     
     public MedusaLogger() {
-        levelFilter = DEFAULT_LOGGER_LEVEL; // TODO: improve this
     }
     
     private void print(GrainLevel level, String toPrint) {

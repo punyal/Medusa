@@ -24,13 +24,16 @@
 package com.punyal.medusa.core.security;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import static com.punyal.medusa.constants.JsonKeys.*;
+import com.punyal.medusa.core.MedusaDevice;
 import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.core.database.IDataBase;
 import com.punyal.medusa.logger.MedusaLogger;
 import com.punyal.medusa.utils.DateUtils;
 import java.net.InetAddress;
 import java.security.SecureRandom;
-import java.util.Date;
+import java.util.List;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -42,13 +45,12 @@ public class CryptoEngine {
     
     public CryptoEngine() {
         randomizer = new SecureRandom();
-        //this.db = db;
     }
     
     public synchronized Authenticator getNewAuthenticator(IDataBase database, InetAddress address) {
         long timeout = System.currentTimeMillis()+DEFAULT_AUTHENTICATOR_TIMEOUT; // Actualtime + timeout in ms
         Authenticator authenticator = new Authenticator(generateNewAuthenticatorValue(), timeout);
-        log.info("Created ticket ["+authenticator.getValue()+"] valid till "+DateUtils.long2DateMillis(timeout));
+        log.info("Created Authenticator ["+authenticator.getValue()+"] @("+address.getHostAddress()+") valid till "+DateUtils.long2DateMillis(timeout));
         DBtools.addNewAuthenticator(database, authenticator.getValue(), address.getHostAddress(),authenticator.getTimeout());
         return authenticator;
     }
@@ -77,6 +79,43 @@ public class CryptoEngine {
         return sb.toString();
     }
     
-    
+    public synchronized JSONObject getTicket(IDataBase database, InetAddress address, String name, String password) {
+        JSONObject json = new JSONObject();
+        // Check if there are name and password
+        if (name != null && password != null) {
+            if (!name.isEmpty() && !password.isEmpty()) {
+                // Check if there is some valid authenticator for that IP
+                List<String> authenticators = DBtools.findAuthenticatorsByAddress(database, address.getHostAddress());
+                if (!authenticators.isEmpty()) {
+                    // find user on the database
+                    MedusaDevice device = DBtools.getDeviceByName(database, name);
+                    if (device != null) {
+                        // Check if the encrypted pass matches
+                        
+                        /*
+                        if (password is correct)
+                            generate ticket;
+                        else error;
+                        */
+                        
+                        
+                    } else { // Wrong name
+                        log.debug("Wrong name");
+                        json.put(JSON_KEY_ERROR, "Wrong name");
+                    }
+                } else { // No valid authenticators
+                    log.debug("No valid authenticators");
+                    json.put(JSON_KEY_ERROR, "No valid authenticators");
+                }
+            } else { // No name or no pass parameter
+                log.debug("Empty name or password");
+                json.put(JSON_KEY_ERROR, "Empty name or password");
+            }
+        } else { // No name or no pass parameter
+            log.debug("No name or password parameter");
+            json.put(JSON_KEY_ERROR, "No name or password parameter");
+        }
+        return json;
+    }
     
 }

@@ -31,6 +31,7 @@ public class JsonKeys {
     /* JSON keys */
     public static final String JSON_KEY_AUTHENTICATOR = "authenticator";
     public static final String JSON_KEY_DEVICES = "devices";
+    public static final String JSON_KEY_ERROR = "error";
     public static final String JSON_KEY_FALSE = "false";
     public static final String JSON_KEY_ID = "id";
     public static final String JSON_KEY_IP = "ip";
