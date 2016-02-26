@@ -73,7 +73,7 @@ public class AuthenticationResource extends CoapResource {
                 JSONObject jsonRequest = JsonUtils.parseString(exchange.getRequestText());
                 // Check if is parsable
                 if (jsonRequest != null) {
-                    json = configuration.getCryptoEngine().getTicket(configuration.getDatabase(), DEFAULT_COAP, configuration.getSecretKey(), exchange.getSourceAddress(), jsonRequest.get(JSON_KEY_NAME).toString(), jsonRequest.get(JSON_KEY_PASSWORD).toString());
+                    json = configuration.getCryptoEngine().getTicket(configuration.getDatabase(), DEFAULT_COAP, configuration.getSecretKey(), exchange.getSourceAddress(), (jsonRequest.get(JSON_KEY_NAME) == null)?null:jsonRequest.get(JSON_KEY_NAME).toString(), (jsonRequest.get(JSON_KEY_PASSWORD) == null)?null:jsonRequest.get(JSON_KEY_PASSWORD).toString());
                 } else { // No payload
                     json.put(JSON_KEY_ERROR, "No parseable JSON");
                 }
@@ -86,6 +86,5 @@ public class AuthenticationResource extends CoapResource {
             log.debug("No JSON Content Format");
             exchange.respond(UNSUPPORTED_CONTENT_FORMAT);
         }
-        
     }
 }

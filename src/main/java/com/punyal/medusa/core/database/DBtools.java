@@ -247,25 +247,34 @@ public class DBtools {
         }
     }
     
-    public static int addNewDevice(IDataBase database, String name, String password) {
-        return addNewDevice(database, name, password, "", "", false, 0, 0, "");
+    public static int addNewDevice(IDataBase database, String name, String password, int timeout) {
+        MedusaDevice device = new MedusaDevice(name, password);
+        if (timeout < 1) timeout = 1;
+        if (timeout > 120) timeout = 120;
+        device.setTimeoutMinutes(timeout);
+        return addNewDevice(database, device);
     }
     
-    public static int addNewDevice(IDataBase database, String name, String password, String address, String ticket, boolean valid, long timeout, long lastlogin, String protocols) {
+    public static int addNewDevice(IDataBase database, MedusaDevice device) {
         log.debug("Adding New Device");
-        if (password.isEmpty()) return 1;
+        if (device.getPassword().isEmpty()) return 1;
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
-                    +" WHERE NAME = '"+name+"';";
+                    +" WHERE NAME = '"+device.getName()+"';";
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             if (rs.next()) // This item is already on the table
             {
-                log.debug("addNewDevice: "+name+" is already at the database");
+                log.debug("addNewDevice: "+device.getName()+" is already at the database");
                 return 2;
             }
-            sql = "INSERT INTO "+DEFAULT_DB_TABLE_DEVICES
-                    +"(NAME, PASS, ADDRESS, TICKET, VALID, TIMEOUT, LASTLOGIN, PROTOCOLS) VALUES ('"+name+"','"+password+"','"+address+"','"+ticket+"','"+(valid?1:0)+"','"+timeout+"','"+lastlogin+"','"+protocols+"');";
+            sql = "INSERT INTO "+DEFAULT_DB_TABLE_DEVICES+"("+KEY_DEVICES_NAME+", "+
+                    KEY_DEVICES_PASSWORD+", "+KEY_DEVICES_ADDRESS+", "+KEY_DEVICES_TICKET+
+                    ", "+KEY_DEVICES_VALID+", "+KEY_DEVICES_EXPIRETIME+", "+
+                    KEY_DEVICES_LASTLOGIN+", "+KEY_DEVICES_PROTOCOLS+", "+KEY_DEVICES_TIMEOUT+
+                    ") VALUES ('"+device.getName()+"','"+device.getPassword()+"','"+device.getAddress()+"','"+device.getTicket()+
+                    "','"+(device.isValid()?1:0)+"','"+device.getExpireTime()+"','"+device.getLastLogin()+"','"+device.getProtocols()+"','"+device.getTimeoutMillis()+"');";
+            
             log.debug(sql);
             database.getConnection().createStatement().executeUpdate(sql);
         } catch (SQLException ex) {
@@ -305,7 +314,7 @@ public class DBtools {
         log.debug("Updating Devices List");
         try {
             String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES
-                    +" WHERE "+KEY_DEVICES_TIMEOUT+" < "+System.currentTimeMillis()+";";
+                    +" WHERE "+KEY_DEVICES_EXPIRETIME+" < "+System.currentTimeMillis()+";";
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             StringBuilder toRemove = new StringBuilder();
@@ -332,7 +341,7 @@ public class DBtools {
         updateDevicesList(database);
         log.debug("Get device by Name");
         try {
-            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE NAME = '"+name+"';";
+            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE "+KEY_DEVICES_NAME+" = '"+name+"';";
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             if(rs.next())
@@ -343,11 +352,37 @@ public class DBtools {
                         rs.getString(KEY_DEVICES_ADDRESS),
                         rs.getString(KEY_DEVICES_TICKET),
                         rs.getBoolean(KEY_DEVICES_VALID),
-                        rs.getLong(KEY_DEVICES_TIMEOUT),
+                        rs.getLong(KEY_DEVICES_EXPIRETIME),
                         rs.getLong(KEY_DEVICES_LASTLOGIN),
-                        rs.getString(KEY_DEVICES_PROTOCOLS));
+                        rs.getString(KEY_DEVICES_PROTOCOLS),
+                        rs.getInt(KEY_DEVICES_TIMEOUT));
         } catch (SQLException ex) {
-            log.error("getDevicesList: "+ex.getMessage());
+            log.error("getDeviceByName: "+ex.getMessage());
+        }
+        return null;
+    }
+    
+    public static MedusaDevice getDeviceByTicket(IDataBase database, String ticket) {
+        updateDevicesList(database);
+        log.debug("Get device by Ticket");
+        try {
+            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE "+KEY_DEVICES_TICKET+" = '"+ticket+"' AND '"+KEY_DEVICES_VALID+"' = 1;";
+            log.debug(sql);
+            ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
+            if(rs.next())
+                return new MedusaDevice(
+                        rs.getInt(KEY_DEVICES_ID),
+                        rs.getString(KEY_DEVICES_NAME),
+                        rs.getString(KEY_DEVICES_PASSWORD),
+                        rs.getString(KEY_DEVICES_ADDRESS),
+                        rs.getString(KEY_DEVICES_TICKET),
+                        rs.getBoolean(KEY_DEVICES_VALID),
+                        rs.getLong(KEY_DEVICES_EXPIRETIME),
+                        rs.getLong(KEY_DEVICES_LASTLOGIN),
+                        rs.getString(KEY_DEVICES_PROTOCOLS),
+                        rs.getInt(KEY_DEVICES_TIMEOUT));
+        } catch (SQLException ex) {
+            log.error("getDeviceByTicket: "+ex.getMessage());
         }
         return null;
     }
@@ -368,9 +403,10 @@ public class DBtools {
                         rs.getString(KEY_DEVICES_ADDRESS),
                         rs.getString(KEY_DEVICES_TICKET),
                         rs.getBoolean(KEY_DEVICES_VALID),
-                        rs.getLong(KEY_DEVICES_TIMEOUT),
+                        rs.getLong(KEY_DEVICES_EXPIRETIME),
                         rs.getLong(KEY_DEVICES_LASTLOGIN),
-                        rs.getString(KEY_DEVICES_PROTOCOLS)));
+                        rs.getString(KEY_DEVICES_PROTOCOLS),
+                        rs.getInt(KEY_DEVICES_TIMEOUT)));
         } catch (SQLException ex) {
             log.error("getDevicesList: "+ex.getMessage());
         }
@@ -380,7 +416,7 @@ public class DBtools {
     public static void updateDeviceTicket(IDataBase database, MedusaDevice device) {
         log.debug("Updating Device Ticket");
         try {
-            String sql = "UPDATE "+DEFAULT_DB_TABLE_DEVICES+" SET "+KEY_DEVICES_ADDRESS+"='"+device.getAddress()+"', "+KEY_DEVICES_LASTLOGIN+"="+device.getLastLogin()+", "+KEY_DEVICES_TIMEOUT+"="+device.getTimeout()+", "+KEY_DEVICES_TICKET+"='"+device.getTicket()+"', "+KEY_DEVICES_PROTOCOLS+"='"+device.getProtocols()+"', "+KEY_DEVICES_VALID+"=1  WHERE ID='"+device.getId()+"';";
+            String sql = "UPDATE "+DEFAULT_DB_TABLE_DEVICES+" SET "+KEY_DEVICES_ADDRESS+"='"+device.getAddress()+"', "+KEY_DEVICES_LASTLOGIN+"="+device.getLastLogin()+", "+KEY_DEVICES_EXPIRETIME+"="+device.getExpireTime()+", "+KEY_DEVICES_TICKET+"='"+device.getTicket()+"', "+KEY_DEVICES_PROTOCOLS+"='"+device.getProtocols()+"', "+KEY_DEVICES_VALID+"=1  WHERE ID='"+device.getId()+"';";
             log.debug(sql);
             database.getConnection().createStatement().executeUpdate(sql);
         } catch (SQLException ex) {

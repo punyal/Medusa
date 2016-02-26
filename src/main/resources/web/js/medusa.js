@@ -27,6 +27,17 @@ $('.changeable').blur(function() {
     }
 });
 
+$('.timeout').blur(function() {
+    if ( $(this).text() === '' || !$.isNumeric($(this).text())){
+        $(this).text('10');
+    } else {
+        var timeout = parseInt($(this).text(),10);
+        if (timeout < 1) timeout = 1;
+        else if (timeout > 120) timeout = 120;
+         $(this).text(timeout);
+    }
+});
+
 $('.table-up').click(function () {
   var $row = $(this).parents('tr');
   if ($row.index() === 1) return; // Don't go above the header
@@ -61,7 +72,7 @@ $BTN.click(function () {
   
   // Get the headers (add special header logic here)
   $($rows.shift()).find('th:not(:empty)').each(function () {
-    headers.push($(this).text().toLowerCase());
+    headers.push($(this).text().toLowerCase().replace('(mins)',''));
   });
   
   // Turn all existing rows into a loopable array
@@ -81,7 +92,10 @@ $BTN.click(function () {
   
   //console.log(JSON.stringify(data));
   
+  
+  
   $("#export-btn").text('Saving...');
+   
   
   $.ajax({
         url: "updateDevicesList",
@@ -138,13 +152,18 @@ function getServerInfo() {
                 $td.eq(1).html('OK');
                 $td.eq(2).html(data.devices[i].name);
                 $td.eq(2).attr('contenteditable','false');
+                $td.eq(2).removeAttr('bgcolor');
                 $td.eq(3).html('');
                 $td.eq(4).html(data.devices[i].login);
                 $td.eq(5).html(data.devices[i].ip);
                 $td.eq(6).html(data.devices[i].ticket);
                 $td.eq(7).html(data.devices[i].protocols);
                 $td.eq(8).html(data.devices[i].valid);
-                $td.eq(9).html(data.devices[i].timeout);
+                $td.eq(9).html(data.devices[i].expire);
+                $td.eq(10).html('');
+                $td.eq(10).html(data.devices[i].timeout);
+                $td.eq(10).attr('contenteditable','false');
+                $td.eq(10).removeAttr('bgcolor');
                 
                 $TABLE.find('table').append($clone);
                 $TABLE.find('id').replaceWith(":)");

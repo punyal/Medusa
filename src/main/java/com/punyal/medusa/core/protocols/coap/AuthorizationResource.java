@@ -27,6 +27,8 @@ import static com.punyal.medusa.constants.Defaults.*;
 import static com.punyal.medusa.constants.JsonKeys.*;
 import com.punyal.medusa.core.configuration.Configuration;
 import static com.punyal.medusa.core.protocols.coap.DefaultsCoAP.*;
+import com.punyal.medusa.logger.MedusaLogger;
+import com.punyal.medusa.utils.JsonUtils;
 import org.eclipse.californium.core.CoapResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 import static org.eclipse.californium.core.coap.MediaTypeRegistry.*;
@@ -38,6 +40,7 @@ import org.json.simple.JSONObject;
  * @author Pablo Puñal Pereira <pablo.punal@ltu.se>
  */
 public class AuthorizationResource extends CoapResource {
+    private static final MedusaLogger log = new MedusaLogger();
     private final Configuration configuration;
     
     public AuthorizationResource(Configuration configuration) {
@@ -48,8 +51,29 @@ public class AuthorizationResource extends CoapResource {
         
     @Override
     public void handlePOST(CoapExchange exchange) {
-        JSONObject json = new JSONObject();
-        json.put(JSON_KEY_VERSION, MEDUSA_VERSION+"."+MEDUSA_SUBVERSION);
-        exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
+        log.debug("CoAP Server - Authorization - POST");
+        /* Check Incoming data process */
+        // Check if it's JSON
+        if (exchange.getRequestOptions().getContentFormat() == APPLICATION_JSON) {
+            JSONObject json = new JSONObject();
+            // If there is payload
+            if (!exchange.getRequestText().isEmpty()) {
+                JSONObject jsonRequest = JsonUtils.parseString(exchange.getRequestText());
+                // Check if is parsable
+                if (jsonRequest != null) {
+                    json = configuration.getCryptoEngine().checkTicket(configuration.getDatabase(), DEFAULT_COAP, exchange.getSourceAddress(), (jsonRequest.get(JSON_KEY_TICKET) == null)?null:jsonRequest.get(JSON_KEY_TICKET).toString(), "remoteAddress", "remoteTicket");
+                    //json = configuration.getCryptoEngine().getTicket(configuration.getDatabase(), DEFAULT_COAP, configuration.getSecretKey(), exchange.getSourceAddress(), jsonRequest.get(JSON_KEY_NAME).toString(), jsonRequest.get(JSON_KEY_PASSWORD).toString());
+                } else { // No payload
+                    json.put(JSON_KEY_ERROR, "No parseable JSON");
+                }
+            } else { // No payload
+                json.put(JSON_KEY_ERROR, "No payload");
+            }
+            log.debug("Response: "+json.toJSONString());
+            exchange.respond(CONTENT, json.toJSONString(), APPLICATION_JSON);
+        } else { // No JSON
+            log.debug("No JSON Content Format");
+            exchange.respond(UNSUPPORTED_CONTENT_FORMAT);
+        }
     }
 }

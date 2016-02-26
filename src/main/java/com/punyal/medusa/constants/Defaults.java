@@ -73,21 +73,26 @@ public class Defaults {
             Defaults.KEY_DEVICES_ADDRESS+" varchar(20), "+
             Defaults.KEY_DEVICES_TICKET+" varchar(20), "+
             Defaults.KEY_DEVICES_VALID+" boolean, "+
-            Defaults.KEY_DEVICES_TIMEOUT+" BIGINT, "+
+            Defaults.KEY_DEVICES_EXPIRETIME+" BIGINT, "+
             Defaults.KEY_DEVICES_LASTLOGIN+" BIGINT, "+
-            Defaults.KEY_DEVICES_PROTOCOLS+" varchar(255), PRIMARY KEY ("+Defaults.KEY_DEVICES_ID+"));";
+            Defaults.KEY_DEVICES_PROTOCOLS+" varchar(255), "+
+            Defaults.KEY_DEVICES_TIMEOUT+" int, PRIMARY KEY ("+Defaults.KEY_DEVICES_ID+"));";
     public static final String KEY_DEVICES_ID = "ID";
     public static final String KEY_DEVICES_NAME = "NAME";
     public static final String KEY_DEVICES_PASSWORD = "PASS";
     public static final String KEY_DEVICES_ADDRESS = "ADDRESS";
     public static final String KEY_DEVICES_TICKET = "TICKET";
     public static final String KEY_DEVICES_VALID = "VALID";
-    public static final String KEY_DEVICES_TIMEOUT = "TIMEOUT";
+    public static final String KEY_DEVICES_EXPIRETIME = "EXPIRETIME";
     public static final String KEY_DEVICES_LASTLOGIN = "LASTLOGIN";
     public static final String KEY_DEVICES_PROTOCOLS = "PROTOCOLS";
+    public static final String KEY_DEVICES_TIMEOUT = "TIMEOUT";
     
     /* Authenticator */
     public static final long DEFAULT_AUTHENTICATOR_TIMEOUT = 15000;// miliseconds
+    
+    /* Ticket */
+    public static final int DEFAULT_TICKET_TIMEOUT = 3600000; // 1hour in millis
     
     /* Conversion */
     public static final String DEFAULT_CHARSET = "UTF-8";

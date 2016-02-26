@@ -24,7 +24,9 @@
 package com.punyal.medusa.core.security;
 
 import static com.punyal.medusa.constants.Defaults.*;
+import com.punyal.medusa.constants.Error;
 import static com.punyal.medusa.constants.JsonKeys.*;
+import com.punyal.medusa.constants.Warning;
 import com.punyal.medusa.core.MedusaDevice;
 import com.punyal.medusa.core.database.DBtools;
 import com.punyal.medusa.core.database.IDataBase;
@@ -89,44 +91,106 @@ public class CryptoEngine {
     }
     
     public synchronized JSONObject getTicket(IDataBase database, String protocol, String secretKey, InetAddress address, String name, String encryptedPassword) {
+        log.debug("Getting Ticket");
         JSONObject json = new JSONObject();
-        // Check if there are name and password
-        if (name != null && encryptedPassword != null) {
-            if (!name.isEmpty() && !encryptedPassword.isEmpty()) {
-                // Check if there is some valid authenticator for that IP
-                List<String> authenticators = DBtools.findAuthenticatorsByAddress(database, address.getHostAddress());
-                if (!authenticators.isEmpty()) {
-                    // find user on the database
-                    MedusaDevice device = DBtools.getDeviceByName(database, name);
-                    
-                    if (device != null) {
-                        log.debug(device.toString());
-                        device.setProtocols(protocol);
-                        // Check if the encrypted pass matches
-                        if (checkPassword(authenticators, secretKey, device.getPassword(), encryptedPassword)) {
-                            findTicket(database, address, device);
-                            json.put(JSON_KEY_TICKET, device.getTicket());
-                            json.put(JSON_KEY_TIMEOUT, device.getTimeout());
-                        } else { // Wrong password
-                            log.debug("Wrong password");
-                            json.put(JSON_KEY_ERROR, "Wrong password");
-                        }
-                    } else { // Wrong name
-                        log.debug("Wrong name");
-                        json.put(JSON_KEY_ERROR, "Wrong name");
-                    }
-                } else { // No valid authenticators
-                    log.debug("No valid authenticators");
-                    json.put(JSON_KEY_ERROR, "No valid authenticators");
-                }
-            } else { // No name or no pass parameter
-                log.debug("Empty name or password");
-                json.put(JSON_KEY_ERROR, "Empty name or password");
-            }
-        } else { // No name or no pass parameter
-            log.debug("No name or password parameter");
-            json.put(JSON_KEY_ERROR, "No name or password parameter");
+        // Check input
+        if (name == null || encryptedPassword == null) {
+            log.debug(Error.CLIENT_NO_VALID_PARAMETERS.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_NO_VALID_PARAMETERS.getCode());
+            return json;
         }
+        if (name.isEmpty() || encryptedPassword.isEmpty()) {
+            log.debug(Error.CLIENT_EMPTY_PARAMETERS.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_EMPTY_PARAMETERS.getCode());
+            return json;
+        }
+        
+        // Find user
+        MedusaDevice device = DBtools.getDeviceByName(database, name);
+        if (device == null) {
+            log.debug(Error.CLIENT_NO_REGISTERED.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_NO_REGISTERED.getCode());
+            return json;
+        }
+        log.debug("New device is trying to Authenticate\n"+device.toString());
+        
+        // Check authenticators
+        List<String> authenticators = DBtools.findAuthenticatorsByAddress(database, address.getHostAddress());
+        if (authenticators.isEmpty()) {
+            log.debug(Error.SERVER_AUTHENTICATOR_EXPIRED.toString());
+            json.put(JSON_KEY_ERROR, Error.SERVER_AUTHENTICATOR_EXPIRED.getCode());
+            return json;
+        }
+        
+        // Check Password
+        if (!checkPassword(authenticators, secretKey, device.getPassword(), encryptedPassword)) {
+            log.debug(Error.CLIENT_WRONG_PASSWORD.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_WRONG_PASSWORD.getCode());
+            return json;
+        }
+        
+        device.setProtocols(protocol);
+        findTicket(database, address, device);
+        json.put(JSON_KEY_TICKET, device.getTicket());
+        json.put(JSON_KEY_EXPIRE_TIME, device.getExpireTime());
+            
+        return json;
+    }
+    
+    public synchronized JSONObject checkTicket(IDataBase database, String protocol, InetAddress address, String ticket, String remoteAddress, String remoteTicket) {
+        log.debug("Checking Ticket");
+        JSONObject json = new JSONObject();
+        // Check incoming parameters
+        if (database == null || protocol == null || address == null || ticket == null || remoteAddress == null || remoteTicket == null) {
+            log.debug(Error.CLIENT_NO_VALID_PARAMETERS.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_NO_VALID_PARAMETERS.getCode());
+            return json;
+        }
+        
+        // Check requester
+        MedusaDevice requester = DBtools.getDeviceByTicket(database, ticket);
+        if (requester == null) {
+            log.debug(Error.CLIENT_NO_REGISTERED.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_NO_REGISTERED.getCode());
+            return json;
+        }
+        if (!requester.getAddress().equals(address.getHostAddress())) {
+            log.warning("Someone from ["+address.getHostAddress()+"] is trying to use Ticket ["+requester.getTicket()+"] when expected address is ["+requester.getAddress()+"]");
+            log.debug(Warning.CLIENT_WRONG_ADDRESS.toString());
+            json.put(JSON_KEY_WARNING, Warning.CLIENT_WRONG_ADDRESS.getCode());
+        }
+        if (!requester.isValid()) {
+            log.warning("Someone from ["+requester.getAddress()+"] is trying to access the system with a expired ticket since "+DateUtils.long2DateMillis(requester.getExpireTime()));
+            log.debug(Error.CLIENT_TICKET_EXPIRED.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_TICKET_EXPIRED.getCode());
+            return json;
+        }
+        
+        // Check remote
+        MedusaDevice remote = DBtools.getDeviceByTicket(database, remoteTicket);
+        if (remote == null) {
+            log.warning("Someone from ["+remoteAddress+"] is trying to access with a faked ticket");
+            log.debug(Error.REMOTE_NO_REGISTERED.toString());
+            json.put(JSON_KEY_ERROR, Error.REMOTE_NO_REGISTERED.getCode());
+            return json;
+        }
+        if (!remote.getAddress().equals(remoteAddress)) {
+            log.warning("Someone from ["+remoteAddress+"] is trying to access to ["+requester.getAddress()+"] using Ticket ["+remote.getTicket()+"] when expected address is ["+remote.getAddress()+"]");
+            log.debug(Warning.REMOTE_DIFFENT_ADRRESS_ACCESS.toString());
+            json.put(JSON_KEY_WARNING, Warning.REMOTE_DIFFENT_ADRRESS_ACCESS.getCode());
+        }
+        if (!remote.isValid()) {
+            log.warning("Someone from ["+remote.getAddress()+"] is trying to access to ["+requester.getAddress()+"] with a expired ticket since "+DateUtils.long2DateMillis(remote.getExpireTime()));
+            log.debug(Error.CLIENT_TICKET_EXPIRED.toString());
+            json.put(JSON_KEY_ERROR, Error.CLIENT_TICKET_EXPIRED.getCode());
+            return json;
+        }
+        
+        log.debug("Ticket Authorization completed!");
+        log.info("Communication authorized between ["+requester.getAddress()+"] and ["+remote.getAddress()+"]");
+        json.put(JSON_KEY_VALID, true);
+        json.put(JSON_KEY_TIMEOUT,remote.getExpireTime()-System.currentTimeMillis());
+        
         return json;
     }
     
@@ -191,17 +255,20 @@ public class CryptoEngine {
             DBtools.updateDeviceTicket(database, device);
             return;
         }
-        String ticket = generateNewTicket();
+        String ticket = generateNewTicket(database);
         log.debug("New generated Ticket ["+ticket+"]");
         device.setTicket(ticket);
         device.setAddress(address);
         device.setLastLogin(System.currentTimeMillis());
-        device.setTimeout(System.currentTimeMillis()+120000);
+        device.setExpireTime(System.currentTimeMillis()+device.getTimeoutMillis());
         DBtools.updateDeviceTicket(database, device);
     }
     
-    private String generateNewTicket() { // TODO: to improve the security level, check if this value is already on the system.
+    private String generateNewTicket(IDataBase database) {
         log.debug("generateNewTicket");
-        return DataUtils.byteArray2hexString(random4bytes());
+        String newTicket;
+        do newTicket = DataUtils.byteArray2hexString(random4bytes());
+        while (DBtools.getDeviceByTicket(database, newTicket) != null);
+        return newTicket;
     }
 }

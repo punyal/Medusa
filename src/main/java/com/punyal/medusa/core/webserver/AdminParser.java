@@ -63,7 +63,7 @@ public class AdminParser {
                         break;
                     case "new":
                         log.debug("new");
-                        switch (DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString())) {
+                        switch (DBtools.addNewDevice(configuration.getDatabase(), json.get(JSON_KEY_NAME).toString(), json.get(JSON_KEY_PASSWORD).toString(), Integer.parseInt(json.get(JSON_KEY_TIMEOUT).toString()))) {
                             case 0:
                                 response.put(json.get(JSON_KEY_NAME).toString(), "added");
                                 break;
