@@ -248,7 +248,7 @@ public class DBtools {
     }
     
     public static int addNewDevice(IDataBase database, String name, String password, int timeout) {
-        MedusaDevice device = new MedusaDevice(name, password);
+        MedusaDevice device = new MedusaDevice(name.toLowerCase(), password);
         if (timeout < 1) timeout = 1;
         if (timeout > 120) timeout = 120;
         device.setTimeoutMinutes(timeout);
