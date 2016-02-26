@@ -99,6 +99,8 @@ public class Configuration {
         confCoapServer = new ConfigurationCoAPServer(coapPort);
         confWebServer = new ConfigurationWebServer(webPort);
         cryptoEngine = new CryptoEngine();
+        
+        secretKey = "test"; //TODO: load it from db
     }
     
     

@@ -67,11 +67,11 @@ public class Defaults {
             DEFAULT_DB_TABLE_AUTHENTICATORS+" ( ID int NOT NULL AUTO_INCREMENT, IP varchar(32) NOT NULL, AUTHENTICATOR varchar(32), TIMEOUT BIGINT, PRIMARY KEY (ID));";
     public static final String DEFAULT_DB_TABLE_DEVICES = "DEVICES";
     public static final String DEFAULT_DB_TABLE_DEVICES_INIT = "CREATE TABLE "+
-            DEFAULT_DB_TABLE_DEVICES+"( "+Defaults.KEY_DEVICES_ADDRESS+" int NOT NULL AUTO_INCREMENT, "+
+            DEFAULT_DB_TABLE_DEVICES+"( "+Defaults.KEY_DEVICES_ID+" int NOT NULL AUTO_INCREMENT, "+
             Defaults.KEY_DEVICES_NAME+" varchar(255) NOT NULL, "+
             Defaults.KEY_DEVICES_PASSWORD+" varchar(255), "+
             Defaults.KEY_DEVICES_ADDRESS+" varchar(20), "+
-            Defaults.KEY_DEVICES_PASSWORD+" varchar(20), "+
+            Defaults.KEY_DEVICES_TICKET+" varchar(20), "+
             Defaults.KEY_DEVICES_VALID+" boolean, "+
             Defaults.KEY_DEVICES_TIMEOUT+" BIGINT, "+
             Defaults.KEY_DEVICES_LASTLOGIN+" BIGINT, "+
@@ -88,6 +88,9 @@ public class Defaults {
     
     /* Authenticator */
     public static final long DEFAULT_AUTHENTICATOR_TIMEOUT = 15000;// miliseconds
+    
+    /* Conversion */
+    public static final String DEFAULT_CHARSET = "UTF-8";
     
     
 }
