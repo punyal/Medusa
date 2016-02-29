@@ -45,6 +45,7 @@ public class Main {
         H2conf h2conf = null;
         int coapPort = 0;
         int webPort = 0;
+        String secretKey = null;
         
         try {
             CommandLine cmd = cli.getCLI(args);
@@ -78,6 +79,10 @@ public class Main {
                 }
             }
             
+            if (cmd.hasOption("secret")) {
+                secretKey = cmd.getOptionValue("secret");
+            }
+            
             if (cmd.hasOption("MySQL")) {
                 mySQLconf = new MySQLconf(cmd.getOptionValues("MySQL"));
                 log.debug(mySQLconf.toString());
@@ -107,7 +112,7 @@ public class Main {
         
 
         
-        Medusa medusa = new Medusa(mySQLconf, h2conf, coapPort, webPort);
+        Medusa medusa = new Medusa(mySQLconf, h2conf, coapPort, webPort, secretKey);
         medusa.run();
         
     }

@@ -48,6 +48,7 @@ public class MedusaCLI {
         options.addOption(OptionBuilder.withArgName("port").hasArgs(1).withValueSeparator().withDescription("Set CoAP port").create("coap"));
         options.addOption(OptionBuilder.withArgName("port").hasArgs(1).withValueSeparator().withDescription("Set Web port").create("web"));
         options.addOption(OptionBuilder.withArgName("level").hasArgs(1).withValueSeparator().withDescription("Set logger level [DEBUG, INFO, WARNING, ERROR, CRITICAL]").create("log"));
+        options.addOption(OptionBuilder.withArgName("secretKey").hasArgs(1).withValueSeparator().withDescription("Set Secret Key").create("secret"));
     }
     
     public CommandLine getCLI(String[] args) throws ParseException {

@@ -47,9 +47,11 @@ import org.json.simple.JSONObject;
 public class CryptoEngine {
     private static final MedusaLogger log = new MedusaLogger();
     private final SecureRandom randomizer;
+    private final String secretKey;
     
-    public CryptoEngine() {
+    public CryptoEngine(String secretKey) {
         randomizer = new SecureRandom();
+        this.secretKey = secretKey;
     }
     
     public synchronized Authenticator getNewAuthenticator(IDataBase database, InetAddress address) {
@@ -90,7 +92,7 @@ public class CryptoEngine {
         return sb.toString();
     }
     
-    public synchronized JSONObject getTicket(IDataBase database, String protocol, String secretKey, InetAddress address, String name, String encryptedPassword) {
+    public synchronized JSONObject getTicket(IDataBase database, String protocol, InetAddress address, String name, String encryptedPassword) {
         log.debug("Getting Ticket");
         JSONObject json = new JSONObject();
         // Check input
@@ -123,7 +125,7 @@ public class CryptoEngine {
         }
         
         // Check Password
-        if (!checkPassword(authenticators, secretKey, device.getPassword(), encryptedPassword)) {
+        if (!checkPassword(authenticators, device.getPassword(), encryptedPassword)) {
             log.debug(Error.CLIENT_WRONG_PASSWORD.toString());
             json.put(JSON_KEY_ERROR, Error.CLIENT_WRONG_PASSWORD.getCode());
             return json;
@@ -194,11 +196,11 @@ public class CryptoEngine {
         return json;
     }
     
-    private boolean checkPassword(List<String> authenticators, String secretKey, String originalPassword, String encryptedPassword) {
-        return authenticators.stream().anyMatch((authenticator) -> (encryptedPassword.equals(encrypt(secretKey, authenticator, originalPassword))));
+    private boolean checkPassword(List<String> authenticators, String originalPassword, String encryptedPassword) {
+        return authenticators.stream().anyMatch((authenticator) -> (encryptedPassword.equals(encrypt(authenticator, originalPassword))));
     }
     
-    private String encrypt(String secretKey, String authenticator, String password) {
+    private String encrypt(String authenticator, String password) {
         try {
             log.debug("encrypt secretKey["+secretKey+"] authenticator["+authenticator+"] password["+password+"]");
             MessageDigest md = MessageDigest.getInstance("MD5");

@@ -42,8 +42,8 @@ public class Medusa implements Runnable {
     private Protocols protocols;
     private WebServer webServer;
     
-    public Medusa(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort) {
-        configuration = new Configuration(mySQLconf, h2conf, coapPort, webPort);
+    public Medusa(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort, String secretKey) {
+        configuration = new Configuration(mySQLconf, h2conf, coapPort, webPort, secretKey);
                 
         
         webServer = new WebServer(configuration);

@@ -42,6 +42,8 @@ public class JsonKeys {
     public static final String JSON_KEY_PASSWORD = "password";
     public static final String JSON_KEY_PROTOCOLS = "protocols";
     public static final String JSON_KEY_PUBLIC_IP = "public_ip";
+    public static final String JSON_KEY_REMOTE_ADDRESS = "remote_address";
+    public static final String JSON_KEY_REMOTE_TICKET = "remote_ticket";
     public static final String JSON_KEY_RESPONSE = "response";
     public static final String JSON_KEY_STATUS = "status";
     public static final String JSON_KEY_TICKET = "ticket";

@@ -56,7 +56,12 @@ public class Configuration {
     private String localIP;
     private String secretKey;
     
-    public Configuration(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort) {
+    public Configuration(MySQLconf mySQLconf, H2conf h2conf, int coapPort, int webPort, String secretKey) {
+        this.secretKey = DEFAULT_SECRET_KEY;
+        if (secretKey != null)
+            if (!secretKey.isEmpty())
+                this.secretKey = secretKey;
+        
         /* Public IP */
         try {
             URL whatismyip = new URL("http://checkip.amazonaws.com");
@@ -98,9 +103,7 @@ public class Configuration {
         /* Load defaults */
         confCoapServer = new ConfigurationCoAPServer(coapPort);
         confWebServer = new ConfigurationWebServer(webPort);
-        cryptoEngine = new CryptoEngine();
-        
-        secretKey = "test"; //TODO: load it from db
+        cryptoEngine = new CryptoEngine(this.secretKey);
     }
     
     
@@ -125,11 +128,7 @@ public class Configuration {
     public IDataBase getDatabase() {
         return database;
     }
-    
-    public String getSecretKey() {
-        return secretKey;
-    }
-    
+        
     public String getPublicIP() {
         return publicIP;
     }

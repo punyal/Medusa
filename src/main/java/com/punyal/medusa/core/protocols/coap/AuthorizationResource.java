@@ -61,8 +61,7 @@ public class AuthorizationResource extends CoapResource {
                 JSONObject jsonRequest = JsonUtils.parseString(exchange.getRequestText());
                 // Check if is parsable
                 if (jsonRequest != null) {
-                    json = configuration.getCryptoEngine().checkTicket(configuration.getDatabase(), DEFAULT_COAP, exchange.getSourceAddress(), (jsonRequest.get(JSON_KEY_TICKET) == null)?null:jsonRequest.get(JSON_KEY_TICKET).toString(), "remoteAddress", "remoteTicket");
-                    //json = configuration.getCryptoEngine().getTicket(configuration.getDatabase(), DEFAULT_COAP, configuration.getSecretKey(), exchange.getSourceAddress(), jsonRequest.get(JSON_KEY_NAME).toString(), jsonRequest.get(JSON_KEY_PASSWORD).toString());
+                    json = configuration.getCryptoEngine().checkTicket(configuration.getDatabase(), DEFAULT_COAP, exchange.getSourceAddress(), (jsonRequest.get(JSON_KEY_TICKET) == null)?null:jsonRequest.get(JSON_KEY_TICKET).toString(), (jsonRequest.get(JSON_KEY_TICKET) == null)?null:jsonRequest.get(JSON_KEY_TICKET).toString(), (jsonRequest.get(JSON_KEY_REMOTE_ADDRESS) == null)?null:jsonRequest.get(JSON_KEY_REMOTE_TICKET).toString());
                 } else { // No payload
                     json.put(JSON_KEY_ERROR, "No parseable JSON");
                 }

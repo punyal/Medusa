@@ -94,6 +94,9 @@ public class Defaults {
     /* Ticket */
     public static final int DEFAULT_TICKET_TIMEOUT = 3600000; // 1hour in millis
     
+    /* Security */
+    public static final String DEFAULT_SECRET_KEY = "nosecretkey";
+    
     /* Conversion */
     public static final String DEFAULT_CHARSET = "UTF-8";
     
