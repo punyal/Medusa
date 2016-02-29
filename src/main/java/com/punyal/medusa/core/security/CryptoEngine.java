@@ -191,6 +191,10 @@ public class CryptoEngine {
         log.debug("Ticket Authorization completed!");
         log.info("Communication authorized between ["+requester.getAddress()+"] and ["+remote.getAddress()+"]");
         json.put(JSON_KEY_VALID, true);
+        json.put(JSON_KEY_NAME, remote.getName());
+        json.put(JSON_KEY_LAST_LOGIN, remote.getLastLogin());
+        json.put(JSON_KEY_EXPIRE_TIME, remote.getExpireTime());
+        json.put(JSON_KEY_PROTOCOLS, remote.getProtocols());
         json.put(JSON_KEY_TIMEOUT,remote.getExpireTime()-System.currentTimeMillis());
         
         return json;

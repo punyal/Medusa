@@ -64,6 +64,7 @@ public class AuthenticationResource extends CoapResource {
     @Override
     public void handlePOST(CoapExchange exchange) {
         log.debug("CoAP Server - Authentication - POST");
+        log.debug(exchange.getRequestText());
         /* Check Incoming data process */
         // Check if it's JSON
         if (exchange.getRequestOptions().getContentFormat() == APPLICATION_JSON) {

@@ -366,7 +366,7 @@ public class DBtools {
         updateDevicesList(database);
         log.debug("Get device by Ticket");
         try {
-            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE "+KEY_DEVICES_TICKET+" = '"+ticket+"' AND '"+KEY_DEVICES_VALID+"' = 1;";
+            String sql = "SELECT * FROM "+DEFAULT_DB_TABLE_DEVICES+" WHERE "+KEY_DEVICES_TICKET+" = '"+ticket+"' AND "+KEY_DEVICES_VALID+" = 1;";
             log.debug(sql);
             ResultSet rs = database.getConnection().createStatement().executeQuery(sql);
             if(rs.next())
